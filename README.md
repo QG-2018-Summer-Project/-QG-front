@@ -1,2 +1,2 @@
-# -QG-front
+# QG-front
 前端组
