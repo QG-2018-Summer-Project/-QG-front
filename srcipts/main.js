@@ -69,3 +69,22 @@ AMap.plugin(['AMap.ToolBar', ],function(){//异步加载插件
     // });
     // //绘制图层
     // layer.render();
+
+
+var panel = document.getElementsByClassName('part-left')[0];
+    showPanelButton = document.getElementsByClassName('show-panel-button')[0];
+
+
+showPanelButton.onclick = function() {
+    
+        let i = 0;
+        var timer = setInterval(() => {
+            if (i < 27) {
+                panel.style.width = i + '%';
+                i++;
+            } else {
+                clearInterval(timer);
+            }
+        }, 17);
+    
+};

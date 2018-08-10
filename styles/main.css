@@ -5,18 +5,33 @@ body {
     height: 100vh;
     width: 100%;
     display: flex;
-    position: relative;
 }
 .part-left {
     height: 100%;
-    width: 27%;
+    width: 0;
     background-color: #000;
+    transition: transform .8s;
+    position: relative;
+}
+.show-panel-button {
+    height: 150px;
+    width: 40px;
+    content: "";
+    display: block;
+    right: -40px;
+    top: 50%;
+    margin-top: -75px;
+    position: absolute;
+    background-color: #00ff40;
+    z-index: 1;
+    cursor: pointer;
+}
+.show-panel {
+    transform: translateX(27%);
 }
 .part-right {
     height: 100%;
-    width: ;
     flex: 1;
-     
 }
 #map-container {
     height: 100%;
@@ -30,6 +45,7 @@ body {
     right: 20px;
     top: 20px;
     background-color: #000;
+    
 }
 /* 去除左下角水印 */
 .amap-logo {
