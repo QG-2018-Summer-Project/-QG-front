@@ -21,7 +21,8 @@ window.onLoad  = function(){
             // 实例化Autocomplete
             var autoOptions = {
                 //city 限定城市，默认全国
-                city: '广州'
+                city: '广州',
+                input: ''
             };
             var autoComplete = new AMap.Autocomplete(autoOptions);
            
@@ -30,7 +31,7 @@ window.onLoad  = function(){
 };
 var url = 'https://webapi.amap.com/maps?v=1.4.8&key=38db8101e26b0719fd8148bd78bde6f9&callback=onLoad',
     jsapi = document.createElement('script'),
-    partRight = document.getElementsByClassName('part-right')[0],
+    partRight = document.getElementsByClassName('panel-right-container')[0],
     loading = document.getElementsByClassName('loading-container')[0];
 
 jsapi.charset = 'utf-8';
@@ -99,7 +100,7 @@ document.head.appendChild(jsapi);
     /**
      * 隐藏或者显示左面板功能
      */
-    var panel = document.getElementsByClassName('part-left')[0];
+    var panel = document.getElementsByClassName('panel-left-container')[0];
     showPanelButton = document.getElementsByClassName('panel-button')[0];
 
     EventUtil.addHandler(showPanelButton, 'click', function () {
@@ -120,3 +121,4 @@ document.head.appendChild(jsapi);
         }
     })();
 })();
+

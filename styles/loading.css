@@ -2,9 +2,10 @@
     position: absolute;
     height: 100px;
     width: 86px;
-    transform: scale(.5);
-    right: 35%;
+    transform: scale(.6);
+    right: 50%;
     top: 30%;
+    margin-right: -43px;
 }
 .cube {
     position: absolute;
