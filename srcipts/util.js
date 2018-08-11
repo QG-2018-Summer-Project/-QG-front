@@ -1,17 +1,6 @@
 window.ip = '10.21.56.122';
 
-/**
- * 对表单的输入字符个数进行限制，超出的话截取前number个字符作为这个表单的值
- * @func
- * @param {*} input 输入表单的对象
- * @param {*} number 输入的字数限制
- */
-function inputLimit(input, number) {
-    if (input.value.length > number) {
-        return input.value.slice(0, number);
-    }
-    return input.value;
-}
+
 
 /**
  * 这是发送所有请求的方法，所有的servlet请求都要经过这个函数
@@ -91,27 +80,6 @@ var EventUtil = {
     })()
 }; 
 
-/**
- * 为元素添加一个CSS类
- * @param {*} elements 
- * @param {*} cName 
- */
-function addClass(elements, cName) {
-    if (!hasClass(elements, cName)) {
-        elements.className += " " + cName;
-    }
-}
-
-/**
- * 移除元素的一个CSS类 
- * @param {*} elements 
- * @param {*} cName 
- */
-function removeClass(elements, cName) {
-    if (hasClass(elements, cName)) {
-        elements.className = elements.className.replace(new RegExp("(\\s|^)" + cName + "(\\s|$)"), " ");
-    }
-}
 
 /**
  * 查找元素节点函数
@@ -128,26 +96,33 @@ function findElementNode(node) {
 }
 
 /**
- * 检查元素是否有某个CSS类
- * @param {*} elements 
- * @param {*} cName 
+ * 通用的css的类函数
  */
-function hasClass(elements, cName) {
-    return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
-}
+var ClassUtil = {
 
-var classUtil = {
-    
-    addClass: function() {
-
-    },
-    hasClass: function() {
-
-    },
-    removeClass: function() {
-
+    hasClass: function(elements, cName) {
+        return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)"));
     },
 
+    addClass: function(elements, cName) {
+        if (!ClassUtil.hasClass(elements, cName)) {
+            elements.className += " " + cName;
+        }
+    },
+
+    removeClass: function(elements, cName) {
+        if (ClassUtil.hasClass(elements, cName)) {
+            elements.className = elements.className.replace(new RegExp("(\\s|^)" + cName + "(\\s|$)"), " ");
+        }
+    },
+
+    toggleClass: function(elements, cName) {
+        if (ClassUtil.hasClass(elements, cName)) {
+            ClassUtil.removeClass(elements, cName);
+        } else {
+            ClassUtil.addClass(elements, cName);
+        }
+    }
 };
 
 
@@ -220,38 +195,7 @@ function lazyLoad($targetArray) {
 }
 
 
-/** 
- * 根据模板创建函数
- * DATE 20180802
- * @author czf
- * @param {string} model 模板
- * @param {element} tag 要创建的标签名
- * @param {element} parentNode 要追加的父节点
- * @param {int} num  要创建的数量
- */
-function createModelNode(model, tag, parentNode, num) {
-    //创建文档碎片降低性能消耗
-    var fragment = document.createDocumentFragment(),
-        newNode;
 
-    for(var i = 0; i < num; i++) {
-        newNode = document.createElement(tag);
-        newNode.innerHTML = model;
-        fragment.appendChild(newNode);
-    }
-    parentNode.appendChild(fragment);
-}
-
-/**
- * 填充数据函数
- * DATE 20180802
- * @author czf
- * @param {element} el 要填入数据的元素
- * @param {string} detail 要填入的数据
- */
-function addDetail(el, detail) {
-    el.innerHTML = detail;
-}
 
 /**
  * 得到当前时间

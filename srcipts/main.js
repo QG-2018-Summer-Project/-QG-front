@@ -1,22 +1,46 @@
-var map = new AMap.Map('map-container', {
-    zoom: 10,
-    //广州市区的坐标
-    center: [113.23, 23.13],
+/**
+ * 异步加载地图
+ */
+window.onLoad  = function(){
     
-});
+    setTimeout(() => {
+        //移除加载动画
+        partRight.removeChild(loading);
+        var map = new AMap.Map('map-container', {
+            zoom: 10,
+            //广州市区的坐标
+            center: [113.23, 23.13],
+            
+        });
+        AMap.plugin(['AMap.ToolBar','AMap.Autocomplete'],function() {//异步加载插件
+            var toolbar = new AMap.ToolBar({
+                "direction": false,
+                "position": "RB" //将插件置于右下方
+            });
+            map.addControl(toolbar);
+            // 实例化Autocomplete
+            var autoOptions = {
+                //city 限定城市，默认全国
+                city: '广州'
+            };
+            var autoComplete = new AMap.Autocomplete(autoOptions);
+           
+        });
+    }, 2500);
+};
+var url = 'https://webapi.amap.com/maps?v=1.4.8&key=38db8101e26b0719fd8148bd78bde6f9&callback=onLoad',
+    jsapi = document.createElement('script'),
+    partRight = document.getElementsByClassName('part-right')[0],
+    loading = document.getElementsByClassName('loading-container')[0];
+
+jsapi.charset = 'utf-8';
+jsapi.src = url;
+document.head.appendChild(jsapi);
 
 /**
  * 引入多个插件
  */
-AMap.plugin(['AMap.ToolBar', ],function(){//异步加载插件
-    var toolbar = new AMap.ToolBar({
-        "direction": false,
-        "position": "RB"
 
-    });
-    map.addControl(toolbar);
-    
-});
 /**
  * 热力图 
  * 
@@ -71,14 +95,28 @@ AMap.plugin(['AMap.ToolBar', ],function(){//异步加载插件
     // layer.render();
 
 
-var panel = document.getElementsByClassName('part-left')[0];
+(function () {
+    /**
+     * 隐藏或者显示左面板功能
+     */
+    var panel = document.getElementsByClassName('part-left')[0];
     showPanelButton = document.getElementsByClassName('panel-button')[0];
 
+    EventUtil.addHandler(showPanelButton, 'click', function () {
+        ClassUtil.toggleClass(panel, 'hide-panel');
+    });
 
-EventUtil.addHandler(showPanelButton, 'click', function() {
-    if (hasClass(panel, 'hide-panel')) {
-        removeClass(panel, 'hide-panel');
-    } else {
-        addClass(panel, 'hide-panel');
-    }
-});
+    /**
+     * 显示二级菜单
+     */
+    var navFirst = document.getElementsByClassName('nav-1'),
+        showNavButton = document.getElementsByClassName('show-nav-button ');
+
+    (function () {
+        for (let i = 0; i < showNavButton.length; i++) {
+            EventUtil.addHandler(showNavButton[i], 'click', function () {
+                ClassUtil.toggleClass(navFirst[i], 'show-nav-animatiton');
+            });
+        }
+    })();
+})();
