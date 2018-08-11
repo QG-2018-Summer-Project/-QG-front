@@ -6,31 +6,97 @@ body {
     width: 100%;
     position: relative;
 }
-.part-left {
+.panel-container { 
+    position: absolute;
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+.panel-left-container {
     height: 100%;
     width: 480px;
     background-color: rgba(255, 255, 255, .9);
-    transition: transform .5s;
+    transition: transform .5s, width .3s, opacity .5s;
     will-change: transform;
-    position: absolute;
-    z-index: 1;
+    transform: translateX(0); 
     box-shadow: 0px 0px 8px 0px rgba(66, 66, 66, .6);
     border-radius: 0 10px 10px 0;
+    z-index: 2;
 }
 .hide-panel {
-    transform: translateX(-100%);
+    transform: translateX(-100%); 
+    width: 0;
+}
+.hide-panel .panel-main-container {
+    display: none;
+}
+.panel-main-container {
+    overflow: hidden;
+}
+.panel-right-container {
+    flex: 1;
+    background-color: #222;
+    opacity: .8;
+    height: 100%;
+    z-index: 0;
+    position: relative;
+}
+.panel-button {
+    height: 150px;
+    width: 40px;
+    content: "";
+    display: block;
+    right: -40px;
+    top: 50%;
+    margin-top: -75px;
+    position: absolute;
+    background-color: #00ff40;
+    cursor: pointer;
+}
+.part-right {
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+}
+#map-container {
+    height: 100%;
+    width: 100%;
+    z-index: 0;
 }
 .panel-top-container {
-    height: 300px;
+    height: auto;
     width: 100%;
     background-color: #21d67c;
-    border-radius: 10px;
+    border-radius: 10px; 
+}
+/* 选择地点 */
+.loaction-container {
+    height: 80px;
+    width: 436px;
+}
+/* 搜索栏 */
+.search-container {
+    height: auto;
+    width: 436px;
+    margin: 0px auto;
+    background-color: #fff;
+    border-radius: 24px;
+    box-shadow: 0 0 5px 0 rgba(66, 66, 66, .7) inset;
+}
+.search-container img {
+    height: 20px;
+    padding: 0 10px 0 20px;
+}
+#search-input {
+    height: 40px;
+    width: 350px;
+    font-size: 16px;
+    background-color: transparent;
 }
 .panel-bottom-container {
     height: auto;
     width: 100%;
     background-color: #fff;
-
 }
 /* 一级导航栏 */
 .nav-1 {
