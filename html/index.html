@@ -39,25 +39,41 @@
         </section>
         <section class="part-right">
             <div class="diplay-data">
-                <span class="arrows left-arrow"></span>
-                <span class="arrows right-arrow"></span>
-                <div class="data-show"></div>
-                <div class="circles-container">
-                    <div class="circles"></div>
-                    <div class="circles"></div>
-                    <div class="circles"></div>
-                    <div class="circles"></div>
-                    <div class="circles"></div>
+                <div>
+                <span id="show-type">出租车利用率</span>
+                <div id="close-show"></div>
                 </div>
+                <div class="flex-box data-container">
+                <div class="arrows left-arrow"></div>
+                <div id="show-area"></div>
+                <div class="arrows right-arrow"></div>
+                </div>
+                <ul class="circles-container flex-box">
+                    <li class="first-circle"></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
             </div>
-            <div id="map-container">
-
+            <div id="map-container"></div>
+            <ul class="switch-box">
+                <li><img src="../images/icon_time.png"></li>
+                <li><img src="../images/icon_change.png"></li>
+                <li><img src="../images/icon_aim.png"></li>
+            </ul>
+            <div class="date-container flex-box">
+                <div class="date start-date"><div><time>----</time>/<time>--</time>/<time>--</time></div><div></div></div>
+                <div class="time start-time"><div></div></div>
+                <div class="date-center"></div>
+                <div class="date end-date">20181818</div>
+                <div class="time end-time">30:20</div>
             </div>
         </section>
     </div>
-    <div class="date-container">
+    <!-- <div class="date-container">
 
-    </div>
+    </div> -->
     <!-- 引入JS文件 -->
     <script src="../srcipts/main.js"></script>
 </body>

@@ -102,3 +102,7 @@ button {
 #pop-button-1 {
     background: rgb(209, 13, 13);
 }
+/* flex布局样式 */
+.flex-box {
+    display: flex;
+}

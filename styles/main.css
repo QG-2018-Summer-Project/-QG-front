@@ -32,6 +32,7 @@ body {
     z-index: 1;
     cursor: pointer;
 }
+/* 右边区域的样式 */
 .part-right {
     height: 100%;
     width: 100%;
@@ -40,7 +41,135 @@ body {
     height: 100%;
     width: 100%;
 }
-/* 日期控件 */
+.diplay-data {
+    position: absolute;
+    z-index: 11;
+    width: 480px;
+    height: 480px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, .72)
+}
+/* .diplay-data>div {
+    margin-top: 26px;
+} */
+#show-type {
+    display: block;
+    margin-top: 26px;
+    font-size: 24px;
+    color: #1f1f1f;
+    text-align: center;
+}
+#close-show {
+    position: absolute;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    top: 26px;
+    right: 16px;
+    background-image: url(../images/icon_cross_large_selected.png);
+}
+.diplay-data .data-container {
+    margin-top: 20px;
+    align-items:center;
+}
+.arrows {
+    width: 46px;
+    height: 82px;
+    cursor: pointer;
+}
+.left-arrow {
+    margin-left: 16px;
+    background: url(../images/arrow_left_leave.png) center center;
+}
+.left-arrow:hover {
+    background: url(../images/arrow_left_over.png) center center;
+}
+.right-arrow {
+    margin-right: 16px;
+    background: url(../images/arrow_right_leave.png);
+}
+.right-arrow:hover {
+    background: url(../images/arrow_right_over.png);
+}
+#show-area {
+    flex: 1;
+    height: 320px;
+}
+.circles-container {
+    margin-top: 30px;
+    justify-content: center;
+}
+.circles-container li {
+    cursor: pointer;
+    width: 12px;
+    height: 12px;
+    transform: scale(1);
+    background: url(../images/circles.png) center center no-repeat;
+    margin-left: 30px
+}
+.first-circle {
+    margin-left: 0!important;
+}
+.switch-box {
+    position: fixed;
+    right: 30px;
+    top: 30px;
+}
+.switch-box li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    z-index: 11;
+    background-color: white;
+    box-shadow: 0px 0px 8px 3px rgba(66, 66, 66, .2);
+}
+.switch-box li img {
+    cursor: pointer;
+    display: block;
+    width: 26px;
+    height: 26px;
+    margin: 0px auto;
+}
+.date-container {
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    right: 100px;
+    top: 30px;
+    width: 520px;
+    height: 48px;
+    z-index: 11;
+    font-size: 18px;
+    border-radius: 24px;
+    background-color: white;
+    box-shadow: 0px 0px 8px 1px rgba(66, 66, 66, .2);
+    overflow: hidden;
+}
+.date-container div {
+    border-radius: 40px;
+    background-color: #EEEEEE;
+}
+.date {
+    width: 128px;
+    height: 36px;
+}
+.time {
+    width: 88px;
+    height: 36px;
+    margin-left: 10px;
+}
+.date-center {
+    width: 28px;
+    height: 10px;
+    margin: 0 6px;
+    background: url(../images/time_center.png) center center no-repeat;
+    background-color: white!important;
+}
+/* 日期控件
 .date-container {
     height: 100px;
     width: 100px;
@@ -49,7 +178,8 @@ body {
     top: 20px;
     background-color: #000;
     
-}
+} */
+
 /* 去除左下角水印 */
 .amap-logo {
     right: 0 !important;

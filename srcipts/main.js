@@ -82,3 +82,48 @@ EventUtil.addHandler(showPanelButton, 'click', function() {
         addClass(panel, 'hide-panel');
     }
 });
+
+(function() {
+    /**
+     * @version 1.0
+     * @author
+     * @description 将选择的时间段区域进行展开或者缩小，当宽度为520时候缩小，当宽度为0时候展开。由于弹出串口没有做到适应窗口大小，所以还未定稿
+     */
+    function dateAreaAnimate() {
+        if ($('.date-container').css('width') == '520px') {
+            $('.date-container').animate({
+                width: '0px'
+            }, 250 ,function() {
+                $('.date-container').css('visibility', 'hidden');
+                $('.part-right .switch-box li img:eq(0)').attr('src', '../images/icon_time.png')
+            });
+        } else {
+            $('.date-container').css('visibility', 'visible')
+            $('.date-container').animate({
+                width: '520px'
+            }, 250, function() {
+                $('.part-right .switch-box li img:eq(0)').attr('src', '../images/icon_cross_large_normal.png')
+            });
+        }
+    }
+
+    /**
+     * @version 1.0
+     * @author
+     * @description 对右边部分进行事件监听
+     * @param {object} event 事件监听对象 
+     */
+    function partRightClickListen(event) {
+        switch(event.target) {
+            case $('.part-right .switch-box li img')[0]: {
+                if ($('.date-container').is(':animated') == true) {
+                    return;
+                }
+                dateAreaAnimate();
+                break;
+            }
+        }
+    }
+
+    EventUtil.addHandler($('.part-right')[0], 'click', partRightClickListen);
+})();
