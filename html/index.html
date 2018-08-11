@@ -38,7 +38,25 @@
             <section class="panel-left-container">
                 <div class="panel-main-container">
                     <div class="panel-top-container">
-                        <div class="loaction-container"></div>
+                        <ul class="loaction-container">
+                            <li>
+                                <div class="label-container">
+                                    <img src="../images/icon_locationmarker.png"><span>起点</span>
+                                </div>
+                                <div class="location-input-container">
+                                    <input type="text" class="location-input">
+                                </div>
+                            </li>
+                            <div id="time-icon"></div>
+                            <li>
+                                <div class="label-container">
+                                    <img src="../images/icon_locationmarker.png"><span>终点</span>
+                                </div >
+                                <div class="location-input-container">
+                                    <input type="text" class="location-input">
+                                </div>
+                            </li>
+                        </ul>
                         <div class="search-container">
                             <img src="../images/icon/icon_search.png">
                             <input type="text" id="search-input">
@@ -78,7 +96,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-button"></div>
+                <div class="panel-button">›</div>
             </section>
             <!-- 看不见的右边视图层 -->
             <section class="panel-right-container">
@@ -245,15 +263,47 @@
                 </div>
 
                 </div>
+                <div class="diplay-data">
+                    <div>
+                    <span id="show-type">出租车利用率</span>
+                    <div id="close-show"></div>
+                    </div>
+                    <div class="flex-box data-container">
+                    <div class="arrows left-arrow"></div>
+                    <div id="show-area"></div>
+                    <div class="arrows right-arrow"></div>
+                    </div>
+                    <ul class="circles-container flex-box">
+                        <li class="first-circle"></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
             </section>
         </div>
         <div class="part-right">
+            <ul class="switch-box">
+                <li><img src="../images/icon_change.png"></li>
+                <li><img src="../images/icon_aim.png"></li>
+            </ul>
+            <div class="date-switch-container" >    
+                <div class="date-container flex-box">
+                    <div class="date start-date"><div><time>----</time>/<time>--</time>/<time>--</time></div><div></div></div>
+                    <div class="time start-time"><div></div></div>
+                    <div class="date-center"></div>
+                    <div class="date end-date">20181818</div>
+                    <div class="time end-time">30:20</div>
+                </div>
+                <div class="switch-mode flex-box"><img src="../images/icon_time.png"></div>
+            </div>
             <div id="map-container"></div>
         </div>
     </div>
-    <div class="date-container">
+    <!-- <div class="date-container">
 
-    </div>
+    </div> -->
     <!-- 引入JS文件 -->
     <script src="../srcipts/main.js"></script>
 </body>

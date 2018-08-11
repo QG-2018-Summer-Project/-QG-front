@@ -96,29 +96,74 @@ document.head.appendChild(jsapi);
     // layer.render();
 
 
-(function () {
-    /**
-     * 隐藏或者显示左面板功能
-     */
-    var panel = document.getElementsByClassName('panel-left-container')[0];
-    showPanelButton = document.getElementsByClassName('panel-button')[0];
-
-    EventUtil.addHandler(showPanelButton, 'click', function () {
-        ClassUtil.toggleClass(panel, 'hide-panel');
-    });
-
-    /**
-     * 显示二级菜单
-     */
-    var navFirst = document.getElementsByClassName('nav-1'),
-        showNavButton = document.getElementsByClassName('show-nav-button ');
-
     (function () {
-        for (let i = 0; i < showNavButton.length; i++) {
-            EventUtil.addHandler(showNavButton[i], 'click', function () {
-                ClassUtil.toggleClass(navFirst[i], 'show-nav-animatiton');
+        /**
+         * 隐藏或者显示左面板功能
+         */
+        var panel = document.getElementsByClassName('panel-left-container')[0];
+        showPanelButton = document.getElementsByClassName('panel-button')[0];
+    
+        EventUtil.addHandler(showPanelButton, 'click', function() {
+            ClassUtil.toggleClass(panel, 'hide-panel');
+        });
+    
+        /**
+         * 显示二级菜单
+         */
+        var navFirst = document.getElementsByClassName('nav-1'),
+            showNavButton = document.getElementsByClassName('show-nav-button ');
+    
+        (function () {
+            for (let i = 0; i < showNavButton.length; i++) {
+                EventUtil.addHandler(showNavButton[i], 'click', function() {
+                    ClassUtil.toggleClass(navFirst[i], 'show-nav-animatiton');
+                });
+            }
+        })();
+    })();
+    
+
+
+(function() {
+    /**
+     * @version 1.0
+     * @author
+     * @description 将选择的时间段区域进行展开或者缩小，当宽度为520时候缩小，当宽度为0时候展开。由于弹出串口没有做到适应窗口大小，所以还未定稿
+     */
+    function dateAreaAnimate() {
+        if ($('.date-switch-container').css('width') == '560px') {
+            $('.date-switch-container').animate({
+                width: '48px'
+            }, 250 ,function() {
+                $('.part-right .switch-mode img:eq(0)').attr('src', '../images/icon_time.png');
+            });
+        } else {
+            $('.date-switch-container').animate({
+                width: '560px'
+            }, 250, function() {
+                $('.part-right .switch-mode img:eq(0)').attr('src', '../images/icon_cross_large_normal.png');
             });
         }
-    })();
-})();
+    }
 
+    /**
+     * @version 1.0
+     * @author
+     * @description 对右边部分进行事件监听
+     * @param {object} event 事件监听对象 
+     */
+    function partRightClickListen(event) {
+        switch(event.target) {
+            case $('.part-right .switch-mode img')[0]: {
+                if ($('.date-switch-container').is(':animated') == true) {
+                    return;
+                }
+                dateAreaAnimate();
+                break;
+            }
+        }
+    }
+
+    EventUtil.addHandler($('.part-right')[0], 'click', partRightClickListen);
+    
+})();
