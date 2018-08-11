@@ -11,7 +11,7 @@ var map = new AMap.Map('map-container', {
 AMap.plugin(['AMap.ToolBar', ],function(){//异步加载插件
     var toolbar = new AMap.ToolBar({
         "direction": false,
-        
+        "position": "RB"
 
     });
     map.addControl(toolbar);
@@ -72,19 +72,13 @@ AMap.plugin(['AMap.ToolBar', ],function(){//异步加载插件
 
 
 var panel = document.getElementsByClassName('part-left')[0];
-    showPanelButton = document.getElementsByClassName('show-panel-button')[0];
+    showPanelButton = document.getElementsByClassName('panel-button')[0];
 
 
-showPanelButton.onclick = function() {
-    
-        let i = 0;
-        var timer = setInterval(() => {
-            if (i < 27) {
-                panel.style.width = i + '%';
-                i++;
-            } else {
-                clearInterval(timer);
-            }
-        }, 17);
-    
-};
+EventUtil.addHandler(showPanelButton, 'click', function() {
+    if (hasClass(panel, 'hide-panel')) {
+        removeClass(panel, 'hide-panel');
+    } else {
+        addClass(panel, 'hide-panel');
+    }
+});

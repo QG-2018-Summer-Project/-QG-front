@@ -4,16 +4,22 @@ body {
 .root {
     height: 100vh;
     width: 100%;
-    display: flex;
+    position: relative;
 }
 .part-left {
     height: 100%;
-    width: 0;
+    width: 500px;
     background-color: #000;
-    transition: transform .8s;
-    position: relative;
+    transition: transform .5s;
+    will-change: transform;
+    position: absolute;
+    opacity: .8;
+    z-index: 1;
 }
-.show-panel-button {
+.hide-panel {
+    transform: translateX(-500px);
+}
+.panel-button {
     height: 150px;
     width: 40px;
     content: "";
@@ -26,12 +32,9 @@ body {
     z-index: 1;
     cursor: pointer;
 }
-.show-panel {
-    transform: translateX(27%);
-}
 .part-right {
     height: 100%;
-    flex: 1;
+    width: 100%;
 }
 #map-container {
     height: 100%;
