@@ -8,16 +8,93 @@ body {
 }
 .part-left {
     height: 100%;
-    width: 500px;
-    background-color: #000;
+    width: 480px;
+    background-color: rgba(255, 255, 255, .9);
     transition: transform .5s;
     will-change: transform;
     position: absolute;
-    opacity: .8;
     z-index: 1;
+    box-shadow: 0px 0px 8px 0px rgba(66, 66, 66, .6);
+    border-radius: 0 10px 10px 0;
 }
 .hide-panel {
-    transform: translateX(-500px);
+    transform: translateX(-100%);
+}
+.panel-top-container {
+    height: 300px;
+    width: 100%;
+    background-color: #21d67c;
+    border-radius: 10px;
+}
+.panel-bottom-container {
+    height: auto;
+    width: 100%;
+    background-color: #fff;
+
+}
+/* 一级导航栏 */
+.nav-1 {
+    line-height: 72px;
+    width: 100%;
+    border-bottom: 2px solid #eeeeee;
+    position: relative;
+    font-size: 16px;
+}
+.nav-1 img {
+    height: 24px;
+    width: 22px;
+    padding: 0 35px 0 40px;
+}
+.show-nav-button {
+    height: 24px;
+    width: 24px;
+    position: absolute;
+    background: url(../images/icon/arrow_right.png) no-repeat center;
+    background-size: contain;
+    right: 14px;
+    top: 24px;
+    transition: transform .5s;
+}
+.show-nav-animatiton .show-nav-button {
+    transform: rotateZ(90deg);
+} 
+
+/* 二级菜单 */
+.nav-2-container {
+    height: 0;
+    width: 100%;
+    background-color: #21d67c;
+    overflow: hidden;
+    padding: 0;
+    transition: height .5s, padding .5s;
+    will-change: height, padding;
+}
+.show-nav-animatiton .nav-2-container {
+    height: 180px;
+    padding: 16px 0;
+}
+.nav-2-ul {
+    width: 400px;
+    height: auto;
+    border-radius: 10px;
+    margin: 0 auto;
+    overflow: hidden;
+    box-shadow: 0 0 6px 0 rgba(31, 31, 31, .4);
+}
+.nav-2 {
+    height: 60px;
+    line-height: 60px;
+    width: 100%;
+    background-color: #fff;
+    cursor: pointer;
+}
+.nav-2 img {
+    height: 25px;
+    width: 25px;
+    padding: 0 30px;
+}
+#rate {
+    margin: 2px 0;
 }
 .panel-button {
     height: 150px;
@@ -49,9 +126,6 @@ body {
     border-radius: 12px;
     background-color: rgba(255, 255, 255, .72)
 }
-/* .diplay-data>div {
-    margin-top: 26px;
-} */
 #show-type {
     display: block;
     margin-top: 26px;
@@ -72,9 +146,13 @@ body {
     margin-top: 20px;
     align-items:center;
 }
+.diplay-data div,.diplay-data div:hover {
+    background-position: center center;
+    background-size: 100%;
+}
 .arrows {
-    width: 46px;
-    height: 82px;
+    width: 40px;
+    height: 72px;
     cursor: pointer;
 }
 .left-arrow {
@@ -103,17 +181,26 @@ body {
     cursor: pointer;
     width: 12px;
     height: 12px;
-    transform: scale(1);
-    background: url(../images/circles.png) center center no-repeat;
-    margin-left: 30px
+
+    border-radius: 50%;
+    background-color: #90EABD;
+    margin-left: 30px;
+}
+.circles-container li:hover,.li-active {
+    width: 12px;
+    height: 12px;
+    transform: scale(1.33);
+    background-color: #21D67C;
+    box-shadow: 0 0 1px 2px rgba(33, 214, 124, .2)
 }
 .first-circle {
     margin-left: 0!important;
 }
 .switch-box {
     position: fixed;
+    z-index: 11;
     right: 30px;
-    top: 30px;
+    top: 98px;
 }
 .switch-box li {
     display: flex;
@@ -127,7 +214,7 @@ body {
     background-color: white;
     box-shadow: 0px 0px 8px 3px rgba(66, 66, 66, .2);
 }
-.switch-box li img {
+.switch-box li img,.switch-mode img {
     cursor: pointer;
     display: block;
     width: 26px;
@@ -135,13 +222,16 @@ body {
     margin: 0px auto;
 }
 .date-container {
-    position: fixed;
     justify-content: center;
     align-items: center;
-    right: 100px;
-    top: 30px;
     width: 520px;
     height: 48px;
+}
+.date-switch-container {
+    position: fixed;
+    top: 30px; 
+    right: 30px;
+    width: 560px;
     z-index: 11;
     font-size: 18px;
     border-radius: 24px;
@@ -149,6 +239,17 @@ body {
     box-shadow: 0px 0px 8px 1px rgba(66, 66, 66, .2);
     overflow: hidden;
 }
+.switch-mode {
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    right: 0;
+    width: 48px;
+    height: 48px;
+    background-color: white;
+}
+
 .date-container div {
     border-radius: 40px;
     background-color: #EEEEEE;
@@ -182,12 +283,8 @@ body {
 
 /* 去除左下角水印 */
 .amap-logo {
-    right: 0 !important;
-    left: auto !important;
-    display: none;
+    display: none !important;
 }
-
 .amap-copyright {
-    right: 70px !important;
-    left: auto !important;
+    display: none !important;
 }  

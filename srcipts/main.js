@@ -1,22 +1,46 @@
-var map = new AMap.Map('map-container', {
-    zoom: 10,
-    //广州市区的坐标
-    center: [113.23, 23.13],
+/**
+ * 异步加载地图
+ */
+window.onLoad  = function(){
     
-});
+    setTimeout(() => {
+        //移除加载动画
+        partRight.removeChild(loading);
+        var map = new AMap.Map('map-container', {
+            zoom: 10,
+            //广州市区的坐标
+            center: [113.23, 23.13],
+            
+        });
+        AMap.plugin(['AMap.ToolBar','AMap.Autocomplete'],function() {//异步加载插件
+            var toolbar = new AMap.ToolBar({
+                "direction": false,
+                "position": "RB" //将插件置于右下方
+            });
+            map.addControl(toolbar);
+            // 实例化Autocomplete
+            var autoOptions = {
+                //city 限定城市，默认全国
+                city: '广州'
+            };
+            var autoComplete = new AMap.Autocomplete(autoOptions);
+           
+        });
+    }, 2500);
+};
+var url = 'https://webapi.amap.com/maps?v=1.4.8&key=38db8101e26b0719fd8148bd78bde6f9&callback=onLoad',
+    jsapi = document.createElement('script'),
+    partRight = document.getElementsByClassName('part-right')[0],
+    loading = document.getElementsByClassName('loading-container')[0];
+
+jsapi.charset = 'utf-8';
+jsapi.src = url;
+document.head.appendChild(jsapi);
 
 /**
  * 引入多个插件
  */
-AMap.plugin(['AMap.ToolBar', ],function(){//异步加载插件
-    var toolbar = new AMap.ToolBar({
-        "direction": false,
-        "position": "RB"
 
-    });
-    map.addControl(toolbar);
-    
-});
 /**
  * 热力图 
  * 
@@ -71,10 +95,30 @@ AMap.plugin(['AMap.ToolBar', ],function(){//异步加载插件
     // layer.render();
 
 
-var panel = document.getElementsByClassName('part-left')[0];
+(function () {
+    /**
+     * 隐藏或者显示左面板功能
+     */
+    var panel = document.getElementsByClassName('part-left')[0];
     showPanelButton = document.getElementsByClassName('panel-button')[0];
 
+    EventUtil.addHandler(showPanelButton, 'click', function () {
+        ClassUtil.toggleClass(panel, 'hide-panel');
+    });
 
+    /**
+     * 显示二级菜单
+     */
+    var navFirst = document.getElementsByClassName('nav-1'),
+        showNavButton = document.getElementsByClassName('show-nav-button ');
+        (function () {
+            for (let i = 0; i < showNavButton.length; i++) {
+                EventUtil.addHandler(showNavButton[i], 'click', function () {
+                    ClassUtil.toggleClass(navFirst[i], 'show-nav-animatiton');
+                });
+            }
+        })();
+    })();
 EventUtil.addHandler(showPanelButton, 'click', function() {
     if (hasClass(panel, 'hide-panel')) {
         removeClass(panel, 'hide-panel');
@@ -83,6 +127,7 @@ EventUtil.addHandler(showPanelButton, 'click', function() {
     }
 });
 
+
 (function() {
     /**
      * @version 1.0
@@ -90,19 +135,17 @@ EventUtil.addHandler(showPanelButton, 'click', function() {
      * @description 将选择的时间段区域进行展开或者缩小，当宽度为520时候缩小，当宽度为0时候展开。由于弹出串口没有做到适应窗口大小，所以还未定稿
      */
     function dateAreaAnimate() {
-        if ($('.date-container').css('width') == '520px') {
-            $('.date-container').animate({
-                width: '0px'
+        if ($('.date-switch-container').css('width') == '560px') {
+            $('.date-switch-container').animate({
+                width: '48px'
             }, 250 ,function() {
-                $('.date-container').css('visibility', 'hidden');
-                $('.part-right .switch-box li img:eq(0)').attr('src', '../images/icon_time.png')
+                $('.part-right .switch-mode img:eq(0)').attr('src', '../images/icon_time.png')
             });
         } else {
-            $('.date-container').css('visibility', 'visible')
-            $('.date-container').animate({
-                width: '520px'
+            $('.date-switch-container').animate({
+                width: '560px'
             }, 250, function() {
-                $('.part-right .switch-box li img:eq(0)').attr('src', '../images/icon_cross_large_normal.png')
+                $('.part-right .switch-mode img:eq(0)').attr('src', '../images/icon_cross_large_normal.png')
             });
         }
     }
@@ -115,8 +158,8 @@ EventUtil.addHandler(showPanelButton, 'click', function() {
      */
     function partRightClickListen(event) {
         switch(event.target) {
-            case $('.part-right .switch-box li img')[0]: {
-                if ($('.date-container').is(':animated') == true) {
+            case $('.part-right .switch-mode img')[0]: {
+                if ($('.date-switch-container').is(':animated') == true) {
                     return;
                 }
                 dateAreaAnimate();
@@ -126,4 +169,5 @@ EventUtil.addHandler(showPanelButton, 'click', function() {
     }
 
     EventUtil.addHandler($('.part-right')[0], 'click', partRightClickListen);
+    
 })();

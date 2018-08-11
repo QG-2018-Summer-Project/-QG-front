@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="../styles/reset.css">
     <!-- 引入css文件 -->
     <link rel="stylesheet" href="../styles/main.css">
+    <!-- 引入加载动画文件 -->
+    <link rel="stylesheet" href="../styles/loading.css">
     <!-- 引入工具类js文件 -->
     <script src="../srcipts/util.js"></script>
     <!-- 引入JQ -->
@@ -26,16 +28,42 @@
     <!-- 引入echarts文件 -->
     <script src="../srcipts/echarts.min.js"></script>
     <!-- 引入高德地图核心文件 -->
-    <script src="../srcipts/maps.js"></script> 
+    <!-- <script src="../srcipts/maps.js"></script>  -->
     <!-- 引入高德地图loca插件核心文件 -->
     <script src="../srcipts/loca.js"></script>
 </head>
 <body>
     <div class="root">
         <section class="part-left">
-            <div class="panel-button">
-                
+            <div class="panel-top-container">
+
             </div>
+            <div class="panel-bottom-container">
+                <div class="nav-1">
+                    <img src="../images/icon/icon_data.png" >
+                    <span>交通情况</span>
+                    <button class="show-nav-button"></button>
+                    <div class="nav-2-container">
+                    <ul class="nav-2-ul">
+                        <li class="nav-2"><img src="../images/icon/icon_curve.png" ><span>流量</span></li>
+                        <li class="nav-2" id="rate"><img src="../images/icon/icon_pie.png" ><span>出租车利用率</span></li>
+                        <li class="nav-2"><img src="../images/icon/icon_barchart.png" ><span>微信分享</span></li>
+                    </ul>
+                </div>
+                </div>
+                
+                <div class="nav-1">
+                    <img src="../images/icon/icon_best.png" >
+                    <span>最佳路线</span>
+                    <button class="show-nav-button"></button>
+                </div>
+                <div class="nav-1">
+                    <img src="../images/icon/icon_matrixcode.png" >
+                    <span>车辆数目</span>
+                    <button class="show-nav-button"></button>
+                </div>
+            </div>
+            <div class="panel-button"></div>
         </section>
         <section class="part-right">
             <div class="diplay-data">
@@ -56,18 +84,184 @@
                     <li></li>
                 </ul>
             </div>
-            <div id="map-container"></div>
             <ul class="switch-box">
-                <li><img src="../images/icon_time.png"></li>
                 <li><img src="../images/icon_change.png"></li>
                 <li><img src="../images/icon_aim.png"></li>
             </ul>
-            <div class="date-container flex-box">
-                <div class="date start-date"><div><time>----</time>/<time>--</time>/<time>--</time></div><div></div></div>
-                <div class="time start-time"><div></div></div>
-                <div class="date-center"></div>
-                <div class="date end-date">20181818</div>
-                <div class="time end-time">30:20</div>
+            <div class="date-switch-container" style="">    
+                <div class="date-container flex-box">
+                    <div class="date start-date"><div><time>----</time>/<time>--</time>/<time>--</time></div><div></div></div>
+                    <div class="time start-time"><div></div></div>
+                    <div class="date-center"></div>
+                    <div class="date end-date">20181818</div>
+                    <div class="time end-time">30:20</div>
+                </div>
+                <div class="switch-mode flex-box"><img src="../images/icon_time.png"></div>
+            </div>
+            <div class="loading-container">
+                <div class="h1Container">
+                    <div class="cube h1 w1 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                    <div class="cube h1 w1 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                    <div class="cube h1 w1 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                    <div class="cube h1 w2 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                    <div class="cube h1 w2 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                    <div class="cube h1 w2 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                    <div class="cube h1 w3 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                    <div class="cube h1 w3 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                    <div class="cube h1 w3 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                </div>
+                <div class="h2Container">
+
+                    <div class="cube h2 w1 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h2 w1 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h2 w1 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h2 w2 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h2 w2 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h2 w2 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h2 w3 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h2 w3 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h2 w3 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                </div>
+
+                <div class="h3Container">
+
+                    <div class="cube h3 w1 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h3 w1 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h3 w1 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h3 w2 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h3 w2 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h3 w2 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h3 w3 l1">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h3 w3 l2">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+
+                    <div class="cube h3 w3 l3">
+                        <div class="face top"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="map-container">
             </div>
         </section>
     </div>
