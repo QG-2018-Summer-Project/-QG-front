@@ -34,11 +34,14 @@ body {
     overflow: hidden;
 }
 .panel-right-container {
+    display: flex;
     flex: 1;
+    justify-content: center;
+    align-items: center;
     background-color: #222;
     opacity: .8;
     height: 100%;
-    z-index: 0;
+    z-index: 11;
     position: relative;
 }
 .panel-button {
@@ -292,6 +295,69 @@ body {
     align-items: center;
     width: 520px;
     height: 48px;
+}
+.date-container span {
+    display: block;
+    line-height: 14px;
+}
+.date-container>div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.static {
+    cursor: pointer;
+    width: 16px;
+    height: 10px;
+    margin-left: 2px;
+    background: url(../images/arrow_down.png) center center no-repeat;
+    background-size: 100%;
+    transform: rotateZ(-90deg);
+    transition: transform .5s ease; 
+}
+.date-choice {
+    position: absolute;
+    width: 260px;
+    height: 263px;
+    top: 90px;
+    right: 260px;
+    border-radius: 12px;
+    background-color: white;
+    z-index: 111;
+}
+.choice-submit-container {
+    width: 100%;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+}
+.choice-submit-container>button {
+    width: 108px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 17px;
+    background-color: #fff;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2)
+}
+.choice-submit-container>button:first-child {
+    margin-right: 20px;
+    background-color: #21d67c;
+    color: white;
+}
+.choice-year-month-select-container {
+    width: 100%;
+    height: 44px;
+}
+.choice-weekDay-container {
+    width: 100%;
+    height: 28px;
+}
+.choice-date-container {
+    width: 100%;
+    height: 140px;
+}
+.date-transform {
+    transform: rotateZ(0deg);
 }
 .date-switch-container {
     position: fixed;

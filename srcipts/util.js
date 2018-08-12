@@ -1,4 +1,4 @@
-window.ip = '10.21.56.122';
+window.ip = '192.168.1.107';
 
 
 
@@ -112,7 +112,7 @@ var ClassUtil = {
 
     removeClass: function(elements, cName) {
         if (ClassUtil.hasClass(elements, cName)) {
-            elements.className = elements.className.replace(new RegExp("(\\s|^)" + cName + "(\\s|$)"), " ");
+            elements.className = elements.className.replace(new RegExp("(\\s|^)" + cName + "(\\s|$)"), "");
         }
     },
 
