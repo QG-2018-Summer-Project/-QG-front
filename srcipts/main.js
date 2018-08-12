@@ -1,43 +1,120 @@
-var map = null;  // 地图的引用
+
 /**
  * 异步加载地图
  */
-window.onLoad  = function(){
-    
-    setTimeout(() => {
-        //移除加载动画
-        partRight.removeChild(loading);
-            map = new AMap.Map('map-container', {
-            zoom: 10,
-            //广州市区的坐标
-            center: [113.23, 23.13],
-            
-        });
-        AMap.plugin(['AMap.ToolBar','AMap.Autocomplete'],function() {//异步加载插件
-            var toolbar = new AMap.ToolBar({
-                "direction": false,
-                "position": "RB" //将插件置于右下方
-            });
-            map.addControl(toolbar);
-            // 实例化Autocomplete
-            var autoOptions = {
-                //city 限定城市，默认全国
-                city: '广州',
-                input: ''
-            };
-            var autoComplete = new AMap.Autocomplete(autoOptions);
-           
-        });
-    }, 2500);
-};
-var url = 'https://webapi.amap.com/maps?v=1.4.8&key=38db8101e26b0719fd8148bd78bde6f9&callback=onLoad',
-    jsapi = document.createElement('script'),
-    partRight = document.getElementsByClassName('panel-right-container')[0],
-    loading = document.getElementsByClassName('loading-container')[0];
+(function() {
+    var url = 'https://webapi.amap.com/maps?v=1.4.8&key=38db8101e26b0719fd8148bd78bde6f9&callback=onLoad',
+        jsapi = document.createElement('script');
+       
+    jsapi.charset = 'utf-8';
+    jsapi.src = url;
+    document.head.appendChild(jsapi);
+})();
 
-jsapi.charset = 'utf-8';
-jsapi.src = url;
-document.head.appendChild(jsapi);
+window.onLoad  = function(){
+    loadMap();
+};
+
+/**
+ * 加载地图和插件
+ */
+function loadMap() {
+   setTimeout(() => {
+       var partRight = document.getElementsByClassName('panel-right-container')[0],
+           loading = document.getElementsByClassName('loading-container')[0];
+       //移除加载动画
+       partRight.removeChild(loading);
+       window.map = new AMap.Map('map-container', {
+           zoom: 10,
+           //广州市区的坐标
+           center: [113.23, 23.13],
+       });
+       //异步加载插件
+       AMap.plugin(['AMap.ToolBar', 'AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Geolocation'], pluginOptions);
+   }, 1500);
+}
+
+/**
+ * 插件的选项
+ */
+function pluginOptions() {
+
+    //缩放工具条
+    var toolbar = new AMap.ToolBar({
+        "direction": false,
+        "position": "RB", //将插件置于右下方
+        "locate": false
+    });
+    map.addControl(toolbar);
+    //定位插件
+    window.geolocation = new AMap.Geolocation({
+        enableHighAccuracy: true, //使用高精度定位
+        timeout: 10000, //超过10秒后停止定位，默认：无穷大
+        showButton: false,
+        zoomToAccuracy: true, //定位成功后调整地图视野范围使定位位置及精度范围视野内可见
+    });
+    map.addControl(geolocation);
+    AMap.event.addListener(geolocation, 'complete', onComplete); //返回定位信息
+    AMap.event.addListener(geolocation, 'error', onError); //返回定位出错信息
+    //解析定位结果
+    function onComplete(data) {
+        var str = ['定位成功'];
+        str.push('经度：' + data.position.getLng());
+        str.push('纬度：' + data.position.getLat());
+        if (data.accuracy) {
+            str.push('精度：' + data.accuracy + ' 米');
+        } //如为IP精确定位结果则没有精度信息
+        str.push('是否经过偏移：' + (data.isConverted ? '是' : '否'));
+        console.log(str);
+    }
+    //解析定位错误信息
+    function onError(data) {
+        console.log('locate error');
+    }
+    // 实例化Autocomplete
+    var autoSearch = new AMap.Autocomplete({
+        //city 限定城市，默认全国
+        city: '广州',
+        citylimit: true,
+        input: 'search-input'
+    });
+    var autoStart = new AMap.Autocomplete({
+        //city 限定城市，默认全国
+        city: '广州',
+        citylimit: true,
+        input: 'start-input'
+    });
+    var autoEnd = new AMap.Autocomplete({
+        //city 限定城市，默认全国
+        city: '广州',
+        citylimit: true,
+        input: 'end-input'
+    });
+    //地图搜索选项
+    const placeoptions = {
+        map: map,
+        autoFitView: true
+    };
+    //构造地点查询类
+    var placeSearch = new AMap.PlaceSearch(placeoptions);  
+    // var startSearch = new AMap.PlaceSearch(placeoptions);  
+    // var endSearch = new AMap.PlaceSearch(placeoptions);  
+    //注册监听，当选中某条记录时会触发
+    AMap.event.addListener(autoSearch, 'select', select);
+    AMap.event.addListener(autoStart, 'select', select);
+    AMap.event.addListener(autoEnd, 'select', select);
+    AMap.event.addListener(placeSearch, 'markerClick', getMakerData);
+    // AMap.event.addListener(startSearch, 'markerClick', getMakerData);
+    // AMap.event.addListener(endSearch, 'markerClick', getMakerData);
+    function select(e) {
+        placeSearch.setCity(e.poi.adcode);
+        placeSearch.search(e.poi.name);  //关键字查询查询
+    }
+    //获取选取点的信息
+    function getMakerData(e) {
+        console.log(e.data);
+    }     
+}
 
 /**
  * 引入多个插件
@@ -97,31 +174,38 @@ document.head.appendChild(jsapi);
     // layer.render();
 
 
+(function () {
+    /**
+     * 隐藏或者显示左面板功能
+     */
+    var panel = document.getElementsByClassName('panel-left-container')[0];
+    showPanelButton = document.getElementsByClassName('panel-button')[0];
+
+    EventUtil.addHandler(showPanelButton, 'click', function() {
+        // ClassUtil.toggleClass(panel, 'hide-panel');
+        if (ClassUtil.hasClass(panel, 'hide-panel')) {
+            ClassUtil.removeClass(panel, 'hide-panel');
+            showPanelButton.innerHTML = '‹';
+        } else {
+            ClassUtil.addClass(panel, 'hide-panel');
+            showPanelButton.innerHTML = '›';
+        }
+    });
+
+    /**
+     * 显示二级菜单
+     */
+    var navFirst = document.getElementsByClassName('nav-1'),
+        showNavButton = document.getElementsByClassName('show-nav-button ');
+
     (function () {
-        /**
-         * 隐藏或者显示左面板功能
-         */
-        var panel = document.getElementsByClassName('panel-left-container')[0];
-        showPanelButton = document.getElementsByClassName('panel-button')[0];
-    
-        EventUtil.addHandler(showPanelButton, 'click', function () {
-            ClassUtil.toggleClass(panel, 'hide-panel');
-        });
-    
-        /**
-         * 显示二级菜单
-         */
-        var navFirst = document.getElementsByClassName('nav-1'),
-            showNavButton = document.getElementsByClassName('show-nav-button ');
-    
-        (function () {
-            for (let i = 0; i < showNavButton.length; i++) {
-                EventUtil.addHandler(showNavButton[i], 'click', function () {
-                    ClassUtil.toggleClass(navFirst[i], 'show-nav-animatiton');
-                });
-            }
-        })();
+        for (let i = 0; i < showNavButton.length; i++) {
+            EventUtil.addHandler(showNavButton[i], 'click', function() {
+                ClassUtil.toggleClass(navFirst[i], 'show-nav-animatiton');
+            });
+        }
     })();
+})();
     
 
 /**
@@ -139,21 +223,62 @@ document.head.appendChild(jsapi);
             $('.date-switch-container').animate({
                 width: '48px'
             }, 250 ,function() {
-                $('.part-right .switch-mode img:eq(0)').attr('src', '../images/icon_time.png')
+                $('.part-right .switch-mode img:eq(0)').attr('src', '../images/icon_time.png');
             });
         } else {
             $('.date-switch-container').animate({
                 width: '560px'
             }, 250, function() {
-                $('.part-right .switch-mode img:eq(0)').attr('src', '../images/icon_cross_large_normal.png')
+                $('.part-right .switch-mode img:eq(0)').attr('src', '../images/icon_cross_large_normal.png');
             });
         }
     }
 
     /**
      * @version 1.0
+     * @description 对于选择时间段的下拉栏的显示
+     * @param {Object} clickTarget 点击想要选择的时间段的事件对象
+     * @param {Number} rightLocation 绝对元素的相对于右边屏幕的位置
+     * @param {'date'/'time'} type 显示框的类型，日期选择框或者时间选择框
+     */
+    function showList(clickTarget, rightLocation, type) {
+        var text = $(clickTarget).prev()[0].innerText,
+            i;
+        
+        if (type === 'date') {
+            var date;
+            $('.choice-date-container')[0].innerHTML = '';
+            /* 下拉框的初始化 */
+            $('.year-select-switch span')[0].innerText = text.split('/')[0] + '年';
+            $('.month-select-switch span')[0].innerText = text.split('/')[1] + '月';
+            date = new Date(text.split('/')[0], text.split('/')[1], 1);
+            console.log(date.getDay())
+            for (i = 0; i < parseInt(date.getDay()); i++) {
+                $('.choice-date-container')[0].innerHTML += '<b></b>';
+            }
+            date.setMonth(parseInt(text.split('/')[1]));
+            date.setDate(0);
+            console.log(date.getDate())
+            for (i = 1; i <= parseInt(date.getDate()); i++) {
+                $('.choice-date-container')[0].innerHTML += '<li>'+ i +'</li>';
+            }
+            // for (i = 1; i < )
+
+            $('.date-choice').css('right', rightLocation.toString() + 'px');
+            $('.date-choice').css('display', 'block');
+            // 设置超时调用，避免没有出现动画效果
+            setTimeout(function() {
+                ClassUtil.toggleClass($('.date-choice')[0], 'down-list-transform');
+            }, 20);
+        } else {
+            // 时间选择区域的显示动画
+        }
+    }
+
+    /**
+     * @version 1.0
      * @author
-     * @description 对右边部分进行事件监听
+     * @description 对右边地图悬浮的标签部分进行事件监听
      * @param {object} event 事件监听对象 
      */
     function partRightClickListen(event) {
@@ -179,15 +304,15 @@ document.head.appendChild(jsapi);
 
             /* 取某个点的经纬度 */
             case $('.switch-box li img')[1]: {
-                // 点击某个地方，然后获得经纬度
+                geolocation.getCurrentPosition(); 
                 break;
             }
         }
         // 点击时间右边的箭头后，将箭头进行旋转。
         for (i = 0; i < 4; i++) {
             if (event.target == $('.static')[i]) {
-                ClassUtil.toggleClass($('.static')[i], 'date-transform');
-                continue;  // 将点击的块旋转，然后直接跳过这一步下一步，避免改块被切回原来的状态
+                ClassUtil.toggleClass($('.static')[i], 'dropdown-transform');
+                continue;  // 将点击的块旋转，然后直接跳过这一步,进入下一步，避免改块被切回原来的状态
             }
             $('.static')[i].className = 'static';       // 将其他的标签切换到原来状态
         }
@@ -219,7 +344,36 @@ document.head.appendChild(jsapi);
         }
     }
 
+    /**
+     * @version 1.0
+     * @description 选择时间段的延伸栏的事件监听
+     * @param {object} event 事件对象
+     */
+    function dateContainerListen(event) {
+        switch(event.target) {
+            case $('.date-container div div')[0]: {
+                showList(event.target, 380, 'date');
+                break;
+            }
 
+            case $('.date-container div div')[1]: {
+                
+                break;
+            }
+
+            case $('.date-container div div')[2]: {
+                showList(event.target, 110, 'date');
+                break;
+            }
+
+            case $('.date-container div div')[3]: {
+                
+                break;
+            }
+        }
+    }
+
+    EventUtil.addHandler($('.date-container')[0], 'click', dateContainerListen);
     EventUtil.addHandler($('.part-right')[0], 'click', partRightClickListen);
     EventUtil.addHandler($('#close-show')[0], 'click', dataShowContainerClickListen);
 })();
@@ -322,10 +476,3 @@ function heatmapDisplay(jsonObj) {
         data: list
     });
 }
-// heatmapDisplay({
-//     pointSet : [{
-//         lon: 113.23,
-//         lat: 23.13,
-//         weight : 20
-//     }] 
-// });

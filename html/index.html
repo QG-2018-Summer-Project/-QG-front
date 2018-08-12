@@ -37,50 +37,66 @@
         <div class="panel-container">
             <section class="panel-left-container">
                 <div class="panel-main-container">
-                        <div class="panel-top-container">
-                                <div class="loaction-container">
+                    <div class="panel-top-container">
+                        <ul class="loaction-container">
+                            <li>
+                                <div class="label-container">
+                                    <img src="../images/icon_locationmarker.png"><span>起点</span>
                                 </div>
-                                <div class="search-container">
-                                    <img src="../images/icon/icon_search.png">
-                                    <input type="text" id="search-input">
+                                <div class="location-input-container">
+                                    <input type="text" class="location-input" id="start-input">
                                 </div>
+                            </li>
+                            <div id="time-icon"></div>
+                            <li>
+                                <div class="label-container">
+                                    <img src="../images/icon_locationmarker.png"><span>终点</span>
+                                </div >
+                                <div class="location-input-container">
+                                    <input type="text" class="location-input" id="end-input">
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="search-container">
+                            <img src="../images/icon/icon_search.png">
+                            <input type="text" id="search-input">
+                        </div>
+                    </div>
+                    <div class="panel-bottom-container">
+                        <div class="nav-1">
+                            <img src="../images/icon/icon_data.png">
+                            <span>交通情况</span>
+                            <button class="show-nav-button"></button>
+                            <div class="nav-2-container">
+                                <ul class="nav-2-ul">
+                                    <li class="nav-2">
+                                        <img src="../images/icon/icon_curve.png">
+                                        <span>流量</span>
+                                    </li>
+                                    <li class="nav-2" id="rate">
+                                        <img src="../images/icon/icon_pie.png">
+                                        <span>出租车利用率</span>
+                                    </li>
+                                    <li class="nav-2">
+                                        <img src="../images/icon/icon_barchart.png">
+                                        <span>微信分享</span>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="panel-bottom-container">
-                                <div class="nav-1">
-                                    <img src="../images/icon/icon_data.png">
-                                    <span>交通情况</span>
-                                    <button class="show-nav-button"></button>
-                                    <div class="nav-2-container">
-                                        <ul class="nav-2-ul">
-                                            <li class="nav-2">
-                                                <img src="../images/icon/icon_curve.png">
-                                                <span>流量</span>
-                                            </li>
-                                            <li class="nav-2" id="rate">
-                                                <img src="../images/icon/icon_pie.png">
-                                                <span>出租车利用率</span>
-                                            </li>
-                                            <li class="nav-2">
-                                                <img src="../images/icon/icon_barchart.png">
-                                                <span>微信分享</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="nav-1">
-                                    <img src="../images/icon/icon_best.png">
-                                    <span>最佳路线</span>
-                                    <button class="show-nav-button"></button>
-                                </div>
-                                <div class="nav-1">
-                                    <img src="../images/icon/icon_matrixcode.png">
-                                    <span>微信分享</span>
-                                    <button class="show-nav-button"></button>
-                                </div>
-                            </div>
-                            
+                        </div>
+                        <div class="nav-1">
+                            <img src="../images/icon/icon_best.png">
+                            <span>最佳路线</span>
+                            <button class="show-nav-button"></button>
+                        </div>
+                        <div class="nav-1">
+                            <img src="../images/icon/icon_matrixcode.png">
+                            <span>微信分享</span>
+                            <button class="show-nav-button"></button>
+                        </div>
+                    </div>
                 </div>
-                <div class="panel-button"></div>
+                <div class="panel-button">‹</div>
             </section>
             <!-- 看不见的右边视图层 -->
             <section class="panel-right-container">
@@ -274,19 +290,68 @@
             </ul>
             <div class="date-switch-container">    
                 <div class="date-container flex-box">
-                    <div class="date start-date"><span>2017/03/04</span><div class="static"></div></div>
+                    <div class="date start-date"><span>2018/07/12</span><div class="static"></div></div>
                     <div class="time start-time"><span>11:13</span><div class="static"></div></div>
                     <div class="date-center"></div>
-                    <div class="date end-date"><span>2017/03/04</span><div class="static"></div></div>
+                    <div class="date end-date"><span>2017/04/04</span><div class="static"></div></div>
                     <div class="time end-time"><span>11:13</span><div class="static"></div></div>
                 </div>
                 <div class="switch-mode flex-box"><img src="../images/icon_time.png"></div>
             </div>
             <div id="map-container"></div>
             <div class="date-choice">
-                <div class="choice-year-month-select-container"></div>
-                <div class="choice-weekDay-container"></div>
-                <div class="choice-date-container"></div>
+                <div class="choice-year-month-select-container flex-box">
+                    <div class="year-select-switch"><span>2018年</span><div class="static"></div></div>
+                    <div class="month-select-switch"><span>7月</span><div class="static"></div></div>
+                </div>
+                <div class="choice-weekDay-container">
+                    <li>周日</li>
+                    <li>周一</li>
+                    <li>周二</li>
+                    <li>周三</li>
+                    <li>周四</li>
+                    <li>周五</li>
+                    <li>周六</li>
+                </div>
+                <div class="choice-date-container">
+                    <!-- <b></b>
+                    <b></b>
+                    <b></b>
+                    <b></b>
+                    <b></b>
+                    <b></b>
+                    <li>1</li>
+                    <li>2</li>
+                    <li>3</li>
+                    <li>4</li>
+                    <li>5</li>
+                    <li>6</li>
+                    <li>7</li>
+                    <li>8</li>
+                    <li>9</li>
+                    <li>10</li>
+                    <li>11</li>
+                    <li>12</li>
+                    <li>13</li>
+                    <li>14</li>
+                    <li>15</li>
+                    <li>16</li>
+                    <li>17</li>
+                    <li>18</li>
+                    <li>19</li>
+                    <li>20</li>
+                    <li>21</li>
+                    <li>22</li>
+                    <li>23</li>
+                    <li>24</li>
+                    <li>25</li>
+                    <li>26</li>
+                    <li>27</li>
+                    <li>28</li>
+                    <li>29</li>
+                    <li>30</li>
+                    <li>31</li> -->
+                </div>
                 <div class="choice-submit-container flex-box">
                     <button class="certain">确定</button>
                     <button class="cancel">取消</button>

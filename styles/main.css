@@ -45,21 +45,28 @@ body {
     position: relative;
 }
 .panel-button {
-    height: 150px;
-    width: 40px;
+    height: 120px;
+    width: 25px;
     content: "";
     display: block;
-    right: -40px;
+    right: -25px;
     top: 50%;
-    margin-top: -75px;
+    margin-top: -60px;
     position: absolute;
-    background-color: #00ff40;
+    background-color: #21d67c;
     cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,.2);
+    border-radius: 0 5px 5px 0;
+    line-height: 115px;
+    font-size: 40px;
+    color: #fff;
+    text-align: center;
 }
 .part-right {
     height: 100%;
     width: 100%;
     z-index: 0;
+    
 }
 #map-container {
     height: 100%;
@@ -71,11 +78,50 @@ body {
     width: 100%;
     background-color: #21d67c;
     border-radius: 10px; 
+    padding: 16px 0;
 }
 /* 选择地点 */
 .loaction-container {
-    height: 80px;
-    width: 436px;
+    height: auto;
+    width: 380px;
+    background-color: #fff;
+    margin: 0 auto;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+}
+#time-icon {
+    width: 22px;
+    margin: 0 15px;
+    background: url(../images/time_center.png) no-repeat center;
+    background-size: contain;
+    background-position: 0 25px;
+}
+.loaction-container li {
+    width: auto;
+}
+.label-container {
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+.loaction-container img {
+    width: 18px;
+    padding: 0 10px 0 6px;
+}
+.location-input-container {
+    height: auto;
+    width: 140px;
+    background-color: gray;
+    border-radius: 20px;
+}
+.location-input {
+    display: block;
+    height: 30px;
+    width: 120px;
+    padding: 3px 15px;
+    background: transparent;
 }
 /* 搜索栏 */
 .search-container {
@@ -91,7 +137,7 @@ body {
     padding: 0 10px 0 20px;
 }
 #search-input {
-    height: 40px;
+    height: 37px;
     width: 350px;
     font-size: 16px;
     background-color: transparent;
@@ -164,19 +210,6 @@ body {
 }
 #rate {
     margin: 2px 0;
-}
-.panel-button {
-    height: 150px;
-    width: 40px;
-    content: "";
-    display: block;
-    right: -40px;
-    top: 50%;
-    margin-top: -75px;
-    position: absolute;
-    background-color: #00ff40;
-    z-index: 1;
-    cursor: pointer;
 }
 /* 右边区域的样式 */
 .part-right {
@@ -315,48 +348,7 @@ body {
     transform: rotateZ(-90deg);
     transition: transform .5s ease; 
 }
-.date-choice {
-    position: absolute;
-    width: 260px;
-    height: 263px;
-    top: 90px;
-    right: 260px;
-    border-radius: 12px;
-    background-color: white;
-    z-index: 111;
-}
-.choice-submit-container {
-    width: 100%;
-    height: 40px;
-    justify-content: center;
-    align-items: center;
-}
-.choice-submit-container>button {
-    width: 108px;
-    height: 40px;
-    border-radius: 10px;
-    font-size: 17px;
-    background-color: #fff;
-    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2)
-}
-.choice-submit-container>button:first-child {
-    margin-right: 20px;
-    background-color: #21d67c;
-    color: white;
-}
-.choice-year-month-select-container {
-    width: 100%;
-    height: 44px;
-}
-.choice-weekDay-container {
-    width: 100%;
-    height: 28px;
-}
-.choice-date-container {
-    width: 100%;
-    height: 140px;
-}
-.date-transform {
+.dropdown-transform {
     transform: rotateZ(0deg);
 }
 .date-switch-container {
@@ -381,7 +373,6 @@ body {
     height: 48px;
     background-color: white;
 }
-
 .date-container div {
     border-radius: 40px;
     background-color: #EEEEEE;
@@ -390,10 +381,16 @@ body {
     width: 128px;
     height: 36px;
 }
+.date:hover {
+    background-color: #e5e5e5;
+}
 .time {
     width: 88px;
     height: 36px;
     margin-left: 10px;
+}
+.time:hover {
+    background-color: #e5e5e5;
 }
 .date-center {
     width: 28px;
@@ -401,6 +398,124 @@ body {
     margin: 0 6px;
     background: url(../images/time_center.png) center center no-repeat;
     background-color: white!important;
+}
+/* 下拉列表的样式 */
+.date-choice {
+    position: absolute;
+    display: none;
+    width: 260px;
+    top: 70px;
+    right: 260px;
+    border-radius: 12px;
+    background-color: white;
+    z-index: 111;
+    transition: transform .5s ease, opacity .5s ease;
+    opacity: 0;
+    transform: translateY(0px);
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+}
+.down-list-transform {
+    opacity: 1;
+    transform: translateY(20px);
+}
+.choice-submit-container {
+    width: 100%;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.choice-submit-container>button {
+    width: 108px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 17px;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+}
+.certain {
+    margin-right: 20px;
+    background-color: #21d67c;
+    color: white;
+}
+.certain:hover {
+    background-color: #39BA7A;
+}
+.cancel {
+    background-color: #fff;
+}
+.cancel:hover {
+    background-color: #eee;
+}
+.choice-year-month-select-container {
+    width: 100%;
+    height: 52px;
+    justify-content: center;
+    align-items: center;
+}
+.choice-year-month-select-container>div {
+    height: 36px;
+    line-height: 36px;
+    background-color: #EEEEEE;
+    border-radius: 18px;
+}
+.year-select-switch {
+    width: 96px;
+}
+.month-select-switch {
+    width: 88px;
+    margin-left: 10px;
+}
+.choice-year-month-select-container>div>div {
+    float: right;
+    margin-top: 14px;
+    margin-right: 10px;
+}
+.choice-year-month-select-container span {
+    display: block;
+    float: left;
+    margin-left: 13px;
+}
+.choice-weekDay-container {
+    width: 227.5px;
+    height: 20px;
+    margin: 0 auto;
+}
+.choice-weekDay-container>li {
+    float: left;
+    width: 32.5px;
+    height: 20px;
+    text-align: center;
+    font-size: 12px;
+}
+.choice-date-container {
+    width: 228px;
+    margin: 5px auto;
+    transform: translate(-4.5px);
+}
+.choice-date-container::after {
+    content: "";
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+.choice-date-container li {
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+    border-radius: 50%;
+    /* background-color: rgba(66, 214, 124, .75); */
+    line-height: 21px;
+}
+.choice-date-container * {
+    float: left;
+    width: 21px;
+    height: 21px;
+    margin-left: 8.5px;
+    margin-top: 1px;
+    border: 1.5px solid white;
+}
+.choice-date-container li:hover {
+    border: 1.5px solid rgba(66, 214, 124, .75);
 }
 /* 日期控件
 .date-container {
