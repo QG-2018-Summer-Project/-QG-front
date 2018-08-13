@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+       
+        body {
+            height: 100vh;
+            width: 100%;
+            background-color: #fff;
+        }
+        /* 信息浮窗 */
+#info-box {
+    height: auto;
+    width: 200px;
+    background-color: #fff;
+    margin: 0 auto;
+    border-radius: 5px;
+    padding: 5px 5px;
+    position: relative;
+    box-shadow: 1px 0 0 0 #222;
+}
+#info-box::after {
+    content: "";
+    display: block;
+    height: 0;
+    width: 0;
+    position: absolute;
+    border: 12px solid transparent;
+    border-top-color: #fff;
+    bottom: -22px;
+    left: 50%;
+    margin-left: -10px;
+    
+}
+#content {
+    height: auto;
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+} 
+.set-button-container {
+    height: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 6px 0;
+}
+#start {
+    background-color: red;
+    margin-right: 25px;
+}
+.set-button {
+    height: ;
+    width: ;
+    border-radius: 5px;
+    font-size: 10px;
+    padding: 7px 13px;
+    color: #fff;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    background:  #00ccff;
+}
+    </style>
+</head>
+<body>
+    <div id="info-box">
+        <p id="content">广工</p>
+        <div class="set-button-container">
+            <button id="start" class="set-button">设为起点</button>
+            <button id="end" class="set-button">到这里去</button>
+        </div>
+    </div>
+</body>
+</html>

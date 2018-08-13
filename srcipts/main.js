@@ -3,12 +3,14 @@
  */
 (function() {
     var url = 'https://webapi.amap.com/maps?v=1.4.8&key=38db8101e26b0719fd8148bd78bde6f9&callback=loadMap',
-        UIurl = 'https://webapi.amap.com/ui/1.0/main.js?v=1.0.11',
-        jsapi = document.createElement('script');
+         UIurl = 'https://webapi.amap.com/ui/1.0/main.js?v=1.0.11',
+        jsapi = document.createElement('script'),
         ui = document.createElement('script');
         
-    //加载地图js文件
+   
     jsapi.src = url;
+   
+    //加载地图js文件
     document.head.appendChild(jsapi);
     //加载UI文件
     ui.src = UIurl;
@@ -20,36 +22,39 @@
  */
 function loadMap() {
    setTimeout(() => {
-       var partRight = document.getElementsByClassName('panel-right-container')[0],
-           loading = document.getElementsByClassName('loading-container')[0];
-       //移除加载动画
-       partRight.removeChild(loading);
-       window.map = new AMap.Map('map-container', {
-           zoom: 10,
-           //广州市区的坐标
-           center: [113.23, 23.13],
-       });
-       //异步加载插件
-       AMap.plugin(['AMap.ToolBar', 'AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Geolocation'], pluginOptions);
-       //启动UI
-       activeUI();
-    
-      
+        var partRight = document.getElementsByClassName('panel-right-container')[0],
+            loading = document.getElementsByClassName('loading-container')[0];
+        //移除加载动画
+        partRight.removeChild(loading);
+        window.map = new AMap.Map('map-container', {
+            zoom: 10,
+            //广州市区的坐标
+            center: [113.23, 23.13],    
+            rotateEnable: true
+        });
+        //异步加载插件
+        AMap.plugin(['AMap.ToolBar', 'AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Geolocation', 'AMap.ControlBar'], pluginOptions);
+        //启动UI
+        // activeUI();
+        geolocation.getCurrentPosition(); //定位调用语句
    }, 1500);
+   
+  
 }
 /**
  * 轨迹巡航配置
  */
+
 function activeUI() {
     
-    AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
+
+    AMapUI.loadUI(['misc/PathSimplifier'], function(PathSimplifier) {
         if (!PathSimplifier.supportCanvas) {
             alert('当前环境不支持 Canvas！');
             return;
         }
         //启动页面
         initPage(PathSimplifier);
-
     });
 
     function initPage(PathSimplifier) {
@@ -85,13 +90,13 @@ function activeUI() {
             {
                 name: '轨迹0',
                 path: [
-                    // [100.340417, 27.376994],
+                    [100.340417, 27.376994],
         
-                    // [108.426354, 37.827452],
-                    // [113.392174, 31.208439],
-                    // [124.905846, 42.232876]
-                    // [113.32703, 23.132175],
-                    // [113.393116, 23.039404]
+                    [108.426354, 37.827452],
+                    [113.392174, 31.208439],
+                    [124.905846, 42.232876],
+                    [113.32703, 23.132175],
+                    [113.393116, 23.039404]
                 ]
             }, 
         ]);
@@ -103,7 +108,7 @@ function activeUI() {
                 speed: 1000000
             });
 
-        navg0.start();
+        //navg0.start();
         // pathSimplifierIns.hide();
     }
 }
@@ -113,14 +118,6 @@ function activeUI() {
  */
 function pluginOptions() {
 
-    //缩放工具条
-    var toolbar = new AMap.ToolBar({
-        "direction": false,
-        "position": "RB", //将插件置于右下方
-        "locate": false
-    });
-    map.addControl(toolbar);
-    //定位插件
     window.geolocation = new AMap.Geolocation({
         enableHighAccuracy: true, //使用高精度定位
         timeout: 10000, //超过10秒后停止定位，默认：无穷大
@@ -152,6 +149,8 @@ function pluginOptions() {
         citylimit: true,
         input: 'search-input'
     });
+
+    
     var autoStart = new AMap.Autocomplete({
         //city 限定城市，默认全国
         city: '广州',
@@ -165,33 +164,64 @@ function pluginOptions() {
         input: 'end-input'
     });
     //地图搜索选项
-    const placeoptions = {
-        map: map,
-        autoFitView: true
-    };
-    //构造地点查询类
-    var placeSearch = new AMap.PlaceSearch(placeoptions);  
+    // const placeoptions = {
+    //     map: map,
+    //     autoFitView: true,
+    //     pageSize: 1 //只返回一个结果
+    // };
+    // //构造地点查询类
+    // var placeSearch = new AMap.PlaceSearch(placeoptions);  
     // var startSearch = new AMap.PlaceSearch(placeoptions);  
     // var endSearch = new AMap.PlaceSearch(placeoptions);  
     //注册监听，当选中某条记录时会触发
     AMap.event.addListener(autoSearch, 'select', select);
     AMap.event.addListener(autoStart, 'select', select);
     AMap.event.addListener(autoEnd, 'select', select);
-    AMap.event.addListener(placeSearch, 'markerClick', getMakerData);
+    // AMap.event.addListener(placeSearch, 'markerClick', getMakerData);
     // AMap.event.addListener(startSearch, 'markerClick', getMakerData);
     // AMap.event.addListener(endSearch, 'markerClick', getMakerData);
+    
     function select(e) {
-        placeSearch.setCity(e.poi.adcode);
-        placeSearch.search(e.poi.name);  //关键字查询查询
         console.log(e.poi);
+        // 设置缩放级别和中心点
+        map.setZoomAndCenter(14, [e.poi.location.lng, e.poi.location.lat]);
+        // 在新中心点添加 marker 
+        var marker = new AMap.Marker({
+            map: map,
+            position: [e.poi.location.lng, e.poi.location.lat],
+            animation: 'AMAP_ANIMATION_DROP',
+        });
+        AMap.event.addListener(marker, 'click', function() {
+            showInfoWindow(e.poi.name, marker);
+            
+        });
+
     }
+
     //获取选取点的信息
-    function getMakerData(e) {
-        console.log(e.data);
+    function getMakerData(event) {
+        console.log(event.data);
+        console.log(event.marker);
+        AMap.event.addListener(event.marker, 'click', function() {
+           
+        });
     }     
 }
-
-/**
+function creatInfoWindow() {
+    
+}
+function showInfoWindow(content, marker) {
+    var infoWindow = new AMap.InfoWindow({
+        isCustom: true,  //使用自定义窗体
+        content:    '<div id="info-box"><p id="content">'+ content + '</p>' +                    
+                    '<div class="set-button-container">' +
+                    '<button id="start" class="set-button">设为起点</button>' +
+                    '<button id="end" class="set-button">到这里去</button></div></div>',
+        offset: new AMap.Pixel(-2, -50)
+    });
+    infoWindow.open(map, marker.getPosition());
+}
+/** 
  * 引入多个插件
  */
 
