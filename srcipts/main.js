@@ -213,7 +213,8 @@ function creatInfoWindow() {
 function showInfoWindow(content, marker) {
     var infoWindow = new AMap.InfoWindow({
         isCustom: true,  //使用自定义窗体
-        content:    '<div id="info-box"><p id="content">'+ content + '</p>' +                    
+        content:    '<div id="info-box"><div id="close-container"><button id="close-button">x</button></div>' +
+                    '<p id="content">'+ content + '</p>' +                    
                     '<div class="set-button-container">' +
                     '<button id="start" class="set-button">设为起点</button>' +
                     '<button id="end" class="set-button">到这里去</button></div></div>',

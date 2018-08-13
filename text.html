@@ -10,7 +10,7 @@
         body {
             height: 100vh;
             width: 100%;
-            background-color: #fff;
+            background-color: #000;
         }
         /* 信息浮窗 */
 #info-box {
@@ -65,10 +65,26 @@
     cursor: pointer;
     background:  #00ccff;
 }
+#close-container {
+    width: 100%;
+    height: auto;
+    text-align: right
+}
+#close-button {
+    width: auto;
+    outline: none;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    font-weight: 600;
+    color: red;
+    cursor: pointer;
+}
     </style>
 </head>
 <body>
     <div id="info-box">
+        <div id="close-container"><button id="close-button">x</button></div>
         <p id="content">广工</p>
         <div class="set-button-container">
             <button id="start" class="set-button">设为起点</button>

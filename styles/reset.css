@@ -114,7 +114,7 @@ button {
     background-color: #fff;
     margin: 0 auto;
     border-radius: 5px;
-    padding: 5px 5px;
+    padding: 6px 12px;
     position: relative;
     box-shadow: 0 2px 4px 0 #222;
 }
@@ -155,8 +155,22 @@ button {
     font-size: 10px;
     padding: 7px 13px;
     color: #fff;
-    outline: none;
-    border: none;
+    
     cursor: pointer;
     background:  #00ccff;
+}
+#close-container {
+    width: 100%;
+    height: auto;
+    text-align: right;
+}
+#close-button {
+    width: auto;
+
+    background: transparent;
+    font-size: 20px;
+    font-weight: 600;
+    color: red;
+    cursor: pointer;
+    margin-right: 5px;
 }
