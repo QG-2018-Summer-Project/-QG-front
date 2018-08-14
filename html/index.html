@@ -290,19 +290,27 @@
             </ul>
             <div class="date-switch-container">    
                 <div class="date-container flex-box">
-                    <div class="date start-date"><span>2018/07/12</span><div class="static"></div></div>
-                    <div class="time start-time"><span>11:13</span><div class="static"></div></div>
+                    <div class="date" id="start-date"><span>----/--/--</span><div class="static"></div></div>
+                    <div class="time" id="start-time"><span>--:--</span><div class="static"></div></div>
                     <div class="date-center"></div>
-                    <div class="date end-date"><span>2017/04/04</span><div class="static"></div></div>
-                    <div class="time end-time"><span>11:13</span><div class="static"></div></div>
+                    <div class="date" id="end-date" ><span>----/--/--</span><div class="static"></div></div>
+                    <div class="time" id="end-time"><span>--:--</span><div class="static"></div></div>
                 </div>
                 <div class="switch-mode flex-box"><img src="../images/icon_time.png"></div>
             </div>
             <div id="map-container"></div>
-            <div class="date-choice">
+            <div class="date-list start-date-list">
                 <div class="choice-year-month-select-container flex-box">
-                    <div class="year-select-switch"><span>2018年</span><div class="static"></div></div>
-                    <div class="month-select-switch"><span>7月</span><div class="static"></div></div>
+                    <div class="year-select-switch"><span></span><div class="static"></div></div>
+                    <div class="month-select-switch"><span></span><div class="static"></div></div>
+                    <time class="scroll-cut cut-first">
+                        <ul class="year-select-list">
+                        </ul>
+                    </time>
+                    <time class="scroll-cut">
+                        <ul class="month-select-list">
+                        </ul>
+                    </time>
                 </div>
                 <div class="choice-weekDay-container">
                     <li>周日</li>
@@ -313,51 +321,87 @@
                     <li>周五</li>
                     <li>周六</li>
                 </div>
-                <div class="choice-date-container">
-                    <!-- <b></b>
-                    <b></b>
-                    <b></b>
-                    <b></b>
-                    <b></b>
-                    <b></b>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
-                    <li>4</li>
-                    <li>5</li>
-                    <li>6</li>
-                    <li>7</li>
-                    <li>8</li>
-                    <li>9</li>
-                    <li>10</li>
-                    <li>11</li>
-                    <li>12</li>
-                    <li>13</li>
-                    <li>14</li>
-                    <li>15</li>
-                    <li>16</li>
-                    <li>17</li>
-                    <li>18</li>
-                    <li>19</li>
-                    <li>20</li>
-                    <li>21</li>
-                    <li>22</li>
-                    <li>23</li>
-                    <li>24</li>
-                    <li>25</li>
-                    <li>26</li>
-                    <li>27</li>
-                    <li>28</li>
-                    <li>29</li>
-                    <li>30</li>
-                    <li>31</li> -->
+                <div class="choice-date-container"></div>
+                <div class="choice-submit-container flex-box">
+                    <button class="certain">确定</button>
+                    <button class="cancel">取消</button>
+                </div>
+            </div>
+            <div class="date-list end-date-list">
+                <div class="choice-year-month-select-container flex-box">
+                    <div class="year-select-switch"><span></span><div class="static"></div></div>
+                    <div class="month-select-switch"><span></span><div class="static"></div></div>
+                    <time class="scroll-cut cut-first">
+                        <ul class="year-select-list">
+                        </ul>
+                    </time>
+                    <time class="scroll-cut">
+                        <ul class="month-select-list">
+                        </ul>
+                    </time>
+                </div>
+                <div class="choice-weekDay-container">
+                    <li>周日</li>
+                    <li>周一</li>
+                    <li>周二</li>
+                    <li>周三</li>
+                    <li>周四</li>
+                    <li>周五</li>
+                    <li>周六</li>
+                </div>
+                <div class="choice-date-container"></div>
+                <div class="choice-submit-container flex-box">
+                    <button class="certain">确定</button>
+                    <button class="cancel">取消</button>
+                </div>
+            </div>
+            <div class="time-list start-time-list">
+                <div class="time-switch-container flex-box">
+                    <div class="hours-switch"><span>23时</span><div class="static"></div></div>
+                    <div class="minutes-switch"><span>24分</span><div class="static"></div></div>
+                    <time class="time-scroll-cut time-scroll-cut-first">
+                        <ul class="hours-select-list"></ul>
+                    </time>
+                    <time class="time-scroll-cut">
+                        <ul class="minutes-select-list"></ul>
+                    </time>
                 </div>
                 <div class="choice-submit-container flex-box">
                     <button class="certain">确定</button>
                     <button class="cancel">取消</button>
                 </div>
             </div>
-            <div class="time-choice"></div>
+            <div class="time-list end-time-list">
+                <div class="time-switch-container flex-box">
+                    <div class="hours-switch"><span>23时</span><div class="static"></div></div>
+                    <div class="minutes-switch"><span>24分</span><div class="static"></div></div>
+                    <time class="time-scroll-cut time-scroll-cut-first">
+                        <ul class="hours-select-list">
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                        </ul>
+                    </time>
+                    <time class="time-scroll-cut">
+                        <ul class="minutes-select-list">
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                            <li>01时</li>
+                        </ul>
+                    </time>
+                </div>
+                <div class="choice-submit-container flex-box">
+                    <button class="certain">确定</button>
+                    <button class="cancel">取消</button>
+                </div>
+            </div>
         </div>
     </div>
     <!-- <div class="date-container">

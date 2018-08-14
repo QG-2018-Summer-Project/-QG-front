@@ -1,4 +1,5 @@
-window.ip = '192.168.1.107';
+window.ip = '192.168.1.106';
+window.currentDate = '2017-02-01 ';
 
 
 
