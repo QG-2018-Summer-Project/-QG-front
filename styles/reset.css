@@ -144,13 +144,11 @@ button {
     justify-content: center;
     padding: 6px 0;
 }
-#start {
+#start-button {
     background-color: red;
     margin-right: 25px;
 }
 .set-button {
-    height: ;
-    width: ;
     border-radius: 5px;
     font-size: 10px;
     padding: 7px 13px;

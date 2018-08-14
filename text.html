@@ -4,7 +4,108 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
+    <script src="./srcipts/test.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+        // console.log(obj);
+        // var route = [ //路径
+        //     {
+        //         steps: [ //要经历的步骤
+        //             {
+        //                 path: [  //此路段坐标集合
+        //                     {
+
+        //                     }
+        //                 ],
+        //                 start_location: [],
+        //                 end_location: [],
+        //                 time: "", //经过这个路段要多久
+        //             }
+        //         ], 
+        //         time: "",   //高德地图预测的时间
+        //         distance: "" //起点和终点之间的距离
+        //     }
+        // ]
+        // route[0].time = obj.time.toString();
+        // route[0].distance = obj.distance.toString();
+
+        // for (let i = 0; i < obj.steps.length; i++) {
+        //     route[0].steps[i].path = [],
+        
+        //     route[0].steps[i].start_location = {
+        //         lng: obj.steps[i].start_location.lng,
+        //         lat: obj.steps[i].start_location.lat
+        //     }
+        //     route[0].steps[i].end_location = {
+        //         lng: obj.steps[i].end_location.lng,
+        //         lat : obj.steps[i].end_location.lat,
+        //     }
+        //     route[0].steps[i].time = obj.steps[i].time.toString();
+
+        //     route[0].steps.push({
+               
+        //     });
+        //     for (let j = 0; j < obj.steps[i].path.length; j++) {
+        //         route[0].steps[i].path[j] = {
+        //             lng: obj.steps[i].path[j].lng,
+        //             lat: obj.steps[i].path[j].lat
+        //         }
+        //     }
+        // }
+        // route[0].steps.pop();
+        
+        // console.log(route[0]);
+        console.log(obj);
+
+    var route = [ //路径
+        {
+            index: 1, //第几条路线
+            steps: [ //要经历的步骤
+                {
+                    path: [ //此路段坐标集合
+                        {
+
+                        }
+                    ],
+                    start_location: {},
+                    end_location: {},
+                    time: "", //经过这个路段要多久
+                }
+            ],
+            allTime: "", //高德地图预测的时间
+            distance: "" //起点和终点之间的距离
+        }
+    ];
+    route[0].allTime = obj.time.toString();
+    route[0].distance = obj.distance.toString();
+
+    for (let i = 0; i < obj.steps.length; i++) {
+        route[0].steps[i].path = [];
+
+        route[0].steps[i].start_location = {
+            lon: obj.steps[i].start_location.lng,
+            lat: obj.steps[i].start_location.lat
+        };
+        route[0].steps[i].end_location = {
+            lon: obj.steps[i].end_location.lng,
+            lat: obj.steps[i].end_location.lat,
+        };
+        route[0].steps[i].time = obj.steps[i].time.toString();
+
+        route[0].steps.push({
+
+        });
+        for (let j = 0; j < obj.steps[i].path.length; j++) {
+            route[0].steps[i].path[j] = {
+                lon: obj.steps[i].path[j].lng,
+                lat: obj.steps[i].path[j].lat
+            }
+        }
+    }
+    //去除最后一个数组项
+    route[0].steps.pop();
+    console.log(route[0]);
+    </script>
     <style>
        
         body {
