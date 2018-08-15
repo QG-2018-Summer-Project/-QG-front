@@ -77,7 +77,22 @@ function setEndContent(content) {
     var endInput = document.getElementById('end-input');
     endInput.value = content;
 }
-
+(function clearInput() {
+    var clearInputButton = document.getElementsByClassName('clear-input-button');
+    
+    EventUtil.addHandler(clearInputButton[0], 'click', function () {
+        setStartContent("");
+        if (map.hasOwnProperty('startMarker')) {
+            map.remove(map.startMarker);
+        }
+    });
+    EventUtil.addHandler(clearInputButton[1], 'click', function () {
+        setEndContent("");
+        if (map.hasOwnProperty('endMarker')) {
+            map.remove(map.endMarker);
+        }
+    });
+})();
 /**
  * 展示详细信息窗口功能
  * @param {string} content 
@@ -141,9 +156,6 @@ function showInfoWindow(content, location) {
                 infoWindow.close();
                 break;
             } case 1: { //设置为终点
-                if (map.hasOwnProperty('startMarker')) {
-                    map.remove(map.startMarker);
-                } 
                 if (map.hasOwnProperty('endMarker')) {
                     map.remove(map.endMarker);
                 }
@@ -163,30 +175,137 @@ function showInfoWindow(content, location) {
 }
 
 function startRoute(start, end) {
-    var driving = new AMap.Driving({
-        map: map,
+    
+    if ((map.startMarker.getPosition().lng === map.endMarker.getPosition().lng) && (map.startMarker.getPosition().lat === map.endMarker.getPosition().lat)) {
+        alert('起点和终点不能相同！请重新选择!');
+        map.remove(map.endMarker);
+        return; 
+    }
+    
+    console.log('起点' + map.startMarker.getPosition());
+    console.log('终点' + map.endMarker.getPosition());
+
+
+    window.driving = new AMap.Driving({
         hideMarkers: true,
         showTraffic: false,
-        extensions: 'all',
         outlineColor: 'black',
-        Policy: 0
+        policy: 11
     }); 
+    console.log(driving);
 
-    // driving.setPolicy(1);
-    // driving.setPolicy(2);
-    // driving.setPolicy(4);
-    
     driving.search(start, end, function(status, result) {
         //driving.clear();
         if (status === 'no_data') {
             alert('没有结果');
         } else {
             console.log(result);
+            //清除所有的路线
+            clearAllRoutes();
+            var routes = result.routes;
+            map.routes = [];
+           
+            
+            //如果有多条路线，把他们全画出来，并且进行请求
+            switch(routes.length) {
+                case 1: {
+                    //如果只有一条路线，直接画出来，不用请求
+                    drawRoute(routes, 1);
+                    break;
+                } case 2: {
+                    drawRoute(routes, 2);
+                    break;
+                } case 3: {
+                    drawRoute(routes, 3);
+                    break;
+                }
+            }
         }
     });
+}
+/**
+ * 绘制路线
+ * @param {*} routes 
+ * @param {*} length 
+ */
+function drawRoute(routes, length) {
+    //不同的路线颜色不相同
+    var colors = [
+        '#0cf',
+        '#459c50',
+        '#21D67C'
+    ];
+    for (var i = 0; i < length; i++) {
+        var route = routes[i],
+            steps = route.steps,
+            paths = [];
 
+        for (let i = 0, step; i < steps.length; i++) {
+            step = steps[i];
+            paths = paths.concat(step.path);
+        }
+        if (paths.length > 0) {
+            paths = [paths];
+        }
+        addOverlays(paths, colors[i]);
+    }
     
-    
+}
+
+function addOverlays(paths, color) {
+    var _overlays = [];
+    for (let i = 0, path; i < paths.length; i++) {
+        path = new AMap.Polyline({
+            map: map,
+            path: paths[i],
+            lineJoin: 'round',
+            strokeColor: color, //线颜色
+            strokeOpacity: 0.8, //styleOptions.strokeOpacity, //线透明度
+            strokeWeight: 6, //线宽
+            showDir: true,
+            zIndex: 50, //默认zindex为50
+            isOutline: true,
+            outlineColor: '#fff',
+        });
+        _overlays.push(path);
+    }
+    //添加到map对象中
+    map.routes.push(_overlays[0]);
+
+    //绑定事件
+    AMap.event.addListener(_overlays[0], 'click', selectRouteCallBack);
+
+    console.log(map.routes);
+    map.setFitView();
+}
+/**
+ * 点击某条路线时的callback函数
+ * @param {*} event 
+ */
+function selectRouteCallBack(event) {
+    for (let i = 0; i < map.routes.length; i++) {
+        map.routes[i].setOptions({
+            zIndex: 50,
+            strokeOpacity: 0.6, 
+        });
+    }
+    event.target.setOptions({
+        strokeOpacity: 1, 
+        zIndex: 51
+    });
+}
+
+/**
+ * 清除所有路线
+ */
+function clearAllRoutes() {
+    if (map.hasOwnProperty('routes')) {
+        for (let i = 0; i < map.routes.length; i++) {
+            map.remove(map.routes[i]);
+        }
+    } else {
+        return;
+    }
 }
 
 /**
@@ -214,78 +333,6 @@ function addMarker(location, offLeft, offTop) {
         
     });
     return marker;
-}
-
-/**
- * 轨迹巡航配置
- */
-
-function activeUI() {
-    
-
-    AMapUI.loadUI(['misc/PathSimplifier'], function(PathSimplifier) {
-        if (!PathSimplifier.supportCanvas) {
-            alert('当前环境不支持 Canvas！');
-            return;
-        }
-        //启动页面
-        initPage(PathSimplifier);
-    });
-
-    function initPage(PathSimplifier) {
-        //创建组件实例
-        var pathSimplifierIns = new PathSimplifier({
-            zIndex: 100,
-            map: map, //所属的地图实例
-            getPath: function (pathData, pathIndex) {
-                //返回轨迹数据中的节点坐标信息，[AMap.LngLat, AMap.LngLat...] 或者 [[lng|number,lat|number],...]
-                return pathData.path;
-            },
-            getHoverTitle: function (pathData, pathIndex, pointIndex) {
-                //返回鼠标悬停时显示的信息
-                if (pointIndex >= 0) {
-                    //鼠标悬停在某个轨迹节点上
-                    return pathData.name + '，点:' + pointIndex + '/' + pathData.path.length;
-                }
-                //鼠标悬停在节点之间的连线上
-                return pathData.name + '，点数量' + pathData.path.length;
-            },
-            renderOptions: {
-                //轨迹线的样式
-                pathLineStyle: {
-                    strokeStyle: 'red',
-                    lineWidth: 6,
-                    dirArrowStyle: true
-                }
-            }
-        });
-
-        //在这里设置数据
-        pathSimplifierIns.setData([
-            {
-                name: '轨迹0',
-                path: [
-                    [100.340417, 27.376994],
-        
-                    [108.426354, 37.827452],
-                    [113.392174, 31.208439],
-                    [124.905846, 42.232876],
-                    [113.32703, 23.132175],
-                    [113.393116, 23.039404]
-                ]
-            }, 
-        ]);
-
-        //创建一个巡航器
-        var navg0 = pathSimplifierIns.createPathNavigator(0, //关联第1条轨迹
-            {
-                loop: false, //循环播放
-                speed: 1000000
-            });
-
-        //navg0.start();
-        // pathSimplifierIns.hide();
-    }
 }
 
 /**
@@ -488,7 +535,7 @@ function analysisRouteData(data, index) {
             route[0].steps[i].path[j] = {
                 lon: data.steps[i].path[j].lng,
                 lat: data.steps[i].path[j].lat
-            }
+            };
         }
     }
     //去除最后一个数组项
@@ -496,3 +543,52 @@ function analysisRouteData(data, index) {
     console.log(route[0]);
 }
 
+// me.addOverlays = function(walkPaths, busPaths, railwayPaths, styleOptions) {
+//     var map = this.options.map;
+//     styleOptions = styleOptions || {
+//         strokeOpacity: 1
+//     };
+//     var _overlays = [];
+    
+
+//     //绘制乘车的路线
+//     for (let i = 0, busPath; i < busPaths.length; i++) {
+//         busPath = new AMap.Polyline({
+//             map: map,
+//             path: busPaths[i],
+//             lineJoin: 'round',
+//             strokeColor: "#0091ff", //线颜色
+//             strokeOpacity: styleOptions.strokeOpacity, //线透明度
+//             strokeWeight: 6 //线宽
+//         });
+//         busPath.isOfficial = true;
+//         _overlays.push(busPath);
+//     }
+//     //绘制火车发站与到站之间的
+//     for (let i = 0, railwayPath; i < railwayPaths.length; i++) {
+//         railwayPath = new AMap.Polyline({
+//             map: map,
+//             path: railwayPaths[i],
+//             strokeColor: "gray", //线颜色
+//             strokeStyle: "dashed",
+//             strokeOpacity: styleOptions.strokeOpacity, //线透明度
+//             strokeWeight: 4 //线宽
+//         });
+//         railwayPath.isOfficial = true;
+//         _overlays.push(railwayPath);
+//     }
+//     //绘制步行的路线
+//     for (let i = 0, walkPath; i < walkPaths.length; i++) {
+//         walkPath = new AMap.Polyline({
+//             map: map,
+//             path: walkPaths[i],
+//             strokeColor: "gray", //线颜色
+//             strokeStyle: "dashed",
+//             strokeOpacity: styleOptions.strokeOpacity, //线透明度
+//             strokeWeight: 6 //线宽
+//         });
+//         walkPath.isOfficial = true;
+//         _overlays.push(walkPath);
+//     }
+//     return _overlays;
+// };

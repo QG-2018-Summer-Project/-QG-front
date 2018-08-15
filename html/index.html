@@ -45,6 +45,7 @@
                                 </div>
                                 <div class="location-input-container">
                                     <input type="text" class="location-input" id="start-input">
+                                    <button class="clear-input-button"></button>
                                 </div>
                             </li>
                             <div id="time-icon"></div>
@@ -54,11 +55,14 @@
                                 </div >
                                 <div class="location-input-container">
                                     <input type="text" class="location-input" id="end-input">
+                                    <button class="clear-input-button"></button>
                                 </div>
                             </li>
                         </ul>
                         <div class="route-button-container">
+                            <button id="locate-button">我的位置</button>
                             <button id="route-button">开始导航</button>
+                            <button id="delete-route-button">清除路线</button>
                         </div>
                         <div class="search-container">
                             <img src="../images/icon/icon_search.png">
@@ -72,15 +76,15 @@
                             <button class="show-nav-button"></button>
                             <div class="nav-2-container">
                                 <ul class="nav-2-ul">
-                                    <li class="nav-2">
+                                    <li class="nav-2-li">
                                         <img src="../images/icon/icon_curve.png">
                                         <span>流量</span>
                                     </li>
-                                    <li class="nav-2" id="rate">
+                                    <li class="nav-2-li middle-li" id="rate">
                                         <img src="../images/icon/icon_pie.png">
                                         <span>出租车利用率</span>
                                     </li>
-                                    <li class="nav-2">
+                                    <li class="nav-2-li">
                                         <img src="../images/icon/icon_barchart.png">
                                         <span>车辆数目</span>
                                     </li>
@@ -91,6 +95,25 @@
                             <img src="../images/icon/icon_best.png">
                             <span>最佳路线</span>
                             <button class="show-nav-button"></button>
+                            <div class="nav-2-container">
+                                <ul class="nav-2-ul">
+                                    <li class="nav-2-li">
+                                        <img src="../images/route_1.png">
+                                        <span>12</span>min
+                                        <span>212</span>公里
+                                    </li>
+                                    <li class="nav-2-li middle-li" id="" >
+                                        <img src="../images/route_2.png">
+                                        <span>12</span>min
+                                        <span>212</span>公里
+                                    </li>
+                                    <li class="nav-2-li">
+                                        <img src="../images/route_3.png">
+                                        <span>12</span>min
+                                        <span>212</span>公里
+                                    </li>
+                                </ul>
+                            </div>   
                         </div>
                         <div class="nav-1">
                             <img src="../images/icon/icon_matrixcode.png">
