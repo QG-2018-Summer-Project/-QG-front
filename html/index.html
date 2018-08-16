@@ -327,15 +327,15 @@
                 <div class="switch-mode flex-box"><img src="../images/icon_time.png"></div>
             </div>
             <div id="map-container"></div>
-            <div class="date-list start-date-list">
+            <div class="date-list start-date-list list-animate">
                 <div class="choice-year-month-select-container flex-box">
                     <div class="year-select-switch"><span></span><div class="static"></div></div>
                     <div class="month-select-switch"><span></span><div class="static"></div></div>
-                    <time class="scroll-cut cut-first">
+                    <time class="scroll-cut cut-first list-animate">
                         <ul class="year-select-list">
                         </ul>
                     </time>
-                    <time class="scroll-cut">
+                    <time class="scroll-cut list-animate">
                         <ul class="month-select-list">
                         </ul>
                     </time>
@@ -355,15 +355,15 @@
                     <button class="cancel">取消</button>
                 </div>
             </div>
-            <div class="date-list end-date-list">
+            <div class="date-list end-date-list list-animate">
                 <div class="choice-year-month-select-container flex-box">
                     <div class="year-select-switch"><span></span><div class="static"></div></div>
                     <div class="month-select-switch"><span></span><div class="static"></div></div>
-                    <time class="scroll-cut cut-first">
+                    <time class="scroll-cut cut-first list-animate">
                         <ul class="year-select-list">
                         </ul>
                     </time>
-                    <time class="scroll-cut">
+                    <time class="scroll-cut list-animate">
                         <ul class="month-select-list">
                         </ul>
                     </time>
@@ -383,14 +383,14 @@
                     <button class="cancel">取消</button>
                 </div>
             </div>
-            <div class="time-list start-time-list">
+            <div class="time-list start-time-list list-animate">
                 <div class="time-switch-container flex-box">
                     <div class="hours-switch"><span>23时</span><div class="static"></div></div>
                     <div class="minutes-switch"><span>24分</span><div class="static"></div></div>
-                    <time class="time-scroll-cut time-scroll-cut-first">
+                    <time class="time-scroll-cut time-scroll-cut-first list-animate">
                         <ul class="hours-select-list"></ul>
                     </time>
-                    <time class="time-scroll-cut">
+                    <time class="time-scroll-cut list-animate">
                         <ul class="minutes-select-list"></ul>
                     </time>
                 </div>
@@ -399,14 +399,14 @@
                     <button class="cancel">取消</button>
                 </div>
             </div>
-            <div class="time-list end-time-list">
+            <div class="time-list end-time-list list-animate">
                 <div class="time-switch-container flex-box">
                     <div class="hours-switch"><span>23时</span><div class="static"></div></div>
                     <div class="minutes-switch"><span>24分</span><div class="static"></div></div>
-                    <time class="time-scroll-cut time-scroll-cut-first">
+                    <time class="time-scroll-cut time-scroll-cut-first list-animate">
                         <ul class="hours-select-list"></ul>
                     </time>
-                    <time class="time-scroll-cut">
+                    <time class="time-scroll-cut list-animate">
                         <ul class="minutes-select-list"></ul>
                     </time>
                 </div>
@@ -416,14 +416,60 @@
                 </div>
             </div>
             <!-- < 下面是预测时候，将查看过去的元素隐藏 > -->
-            <div class="predict-date-switch-container">
+            <div class="predict-date-switch-container" style="display: none;">
                 <button>确定</button>
+                <div class="predict-data-mode flex-box"><span>显示</span><div class="static"></div></div>
                 <div class="date-container flex-box">
-                    <div class="date" id="end-date" ><span>----/--/--</span><div class="static"></div></div>
-                    <div class="time" id="end-time"><span>--:--</span><div class="static"></div></div>
+                    <div class="date" id="predict-date" ><span>----/--/--</span><div class="static"></div></div>
+                    <div class="time" id="predict-time"><span>--:--</span><div class="static"></div></div>
                 </div>
                 <div class="switch-mode flex-box"><img src="../images/icon_time.png"></div>
             </div>
+            <div class="date-list predict-date-list list-animate">
+                <div class="choice-year-month-select-container flex-box">
+                    <div class="year-select-switch"><span></span><div class="static"></div></div>
+                    <div class="month-select-switch"><span></span><div class="static"></div></div>
+                    <time class="scroll-cut cut-first list-animate">
+                        <ul class="year-select-list">
+                        </ul>
+                    </time>
+                    <time class="scroll-cut list-animate">
+                        <ul class="month-select-list">
+                        </ul>
+                    </time>
+                </div>
+                <div class="choice-weekDay-container">
+                    <li>周日</li>
+                    <li>周一</li>
+                    <li>周二</li>
+                    <li>周三</li>
+                    <li>周四</li>
+                    <li>周五</li>
+                    <li>周六</li>
+                </div>
+                <div class="choice-date-container"></div>
+                <div class="choice-submit-container flex-box">
+                    <button class="certain">确定</button>
+                    <button class="cancel">取消</button>
+                </div>
+            </div>
+            <div class="time-list predict-time-list list-animate">
+                <div class="time-switch-container flex-box">
+                    <div class="hours-switch"><span>23时</span><div class="static"></div></div>
+                    <div class="minutes-switch"><span>24分</span><div class="static"></div></div>
+                    <time class="time-scroll-cut time-scroll-cut-first list-animate">
+                        <ul class="hours-select-list"></ul>
+                    </time>
+                    <time class="time-scroll-cut list-animate">
+                        <ul class="minutes-select-list"></ul>
+                    </time>
+                </div>
+                <div class="choice-submit-container flex-box">
+                    <button class="certain">确定</button>
+                    <button class="cancel">取消</button>
+                </div>
+            </div>
+            <div class="data-mode-list list-animate" data-mode="1"><span class="data-mode-choiced">车辆数目</span><span>出租车需求量</span></div>
         </div>
     </div>
     <div class="float-layer">

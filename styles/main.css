@@ -478,15 +478,12 @@ button {
     border-radius: 12px;
     background-color: white;
     z-index: 111;
-    transition: transform .35s ease, opacity .35s ease;
-    opacity: 0;
-    transform: translateY(0px);
     box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
 }
 .start-date-list {
     right: 380px;
 }
-.end-date-list {
+.end-date-list,.predict-date-list {
     right: 110px;
 }
 .down-list-transform {
@@ -607,8 +604,6 @@ button {
     box-shadow: 0 0 8px 2px rgba(66, 66, 66, .2);
     z-index: 12;
     display: none;
-    opacity: 0;
-    transition: transform .35s ease, opacity .35s ease;
 }
 .cut-first {
     width: 96px;
@@ -655,13 +650,11 @@ button {
     z-index: 12;
     background-color: #fff;
     box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
-    opacity: 0;
-    transition: transform .5s ease,opacity .5s ease;
 }
 .start-time-list {
     right: 260px;
 }
-.end-time-list {
+.end-time-list,.predict-time-list {
     right: 40px;
 }
 .time-switch-container {
@@ -703,8 +696,6 @@ button {
     font-size: 12px;
     box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
     z-index: 12;
-    opacity: 0;
-    transition: transform .5s ease,opacity .5s ease;
 }
 .time-scroll-cut:last-child {
     right: 35px;
@@ -768,8 +759,55 @@ button {
     color: #fff;
     box-shadow: 0 0 4px 1px rgba(5, 31, 18, .2);
 }
-.float-layer>div>button:hover,.date-switch-container button:hover {
+.float-layer>div>button:hover,.date-switch-container button:hover,.predict-date-switch-container button:hover {
     background-color: #39BA7A;
+}
+.predict-data-mode {
+    float: left;
+    justify-content: center;
+    align-items: center;
+    width: 68px;
+    margin-left: 8px;
+    height: 48px;
+    background-color: #eee;
+    font-size: 16px;
+    color: #21D67C;
+}
+.predict-data-mode * {
+    float: left;
+}
+.data-mode-list {
+    position: absolute;
+    display: none;
+    width: 160px;
+    height: 96px;
+    top: 70px;
+    right: 270px;
+    z-index: 13;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+    overflow: hidden;
+}
+.predict-data-mode:hover {
+    background-color: #e5e5e5;
+}
+.data-mode-list span {
+    display: block;
+    cursor: pointer;
+    width: 100%;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    color: #1f1f1f;
+}
+.data-mode-list span:hover,.data-mode-choiced {
+    background-color: #21d67c;
+    color: #fff!important;
+}
+.list-animate {
+    opacity: 0;
+    transition: transform .35s ease,opacity .35s ease;
 }
 /* 日期控件
 .date-container {

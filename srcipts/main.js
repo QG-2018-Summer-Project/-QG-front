@@ -513,7 +513,7 @@ function pluginOptions() {
     }
 
     /**
-     * @description 对切换模式进行监听
+     * @description 对右边侧栏的切换模式进行监听
      * @param {object} event 事件监听对象
      */
     function modeChangeListen(event) {
@@ -551,6 +551,16 @@ function pluginOptions() {
                 }
                 ClassUtil.addClass($('#past-tense')[0], 'mode-choiced');
                 ClassUtil.removeClass($('#future-tense')[0], 'mode-choiced');
+                $('.date-switch-container').css('display', 'block');
+                /* 将时间选择收缩并消失 */
+                if ($('.predict-date-switch-container').css('width') == '410px') {
+                    dateAreaAnimate('predict-date-switch-container', 410);
+                    setTimeout(function() {
+                        $('.predict-date-switch-container').css('display', 'none');
+                    }, 250);
+                } else {
+                    $('.predict-date-switch-container').css('display', 'none');
+                }
                 break;
             }
 
@@ -561,6 +571,18 @@ function pluginOptions() {
                 }
                 ClassUtil.addClass($('#future-tense')[0], 'mode-choiced');
                 ClassUtil.removeClass($('#past-tense')[0], 'mode-choiced');
+                // $('.date-switch-container').css('display', 'none', 'width', '48px');
+                $('.predict-date-switch-container').css('display', 'block');
+
+                /* 将时间选择收缩并消失 */
+                if ($('.date-switch-container').css('width') == '608px') {
+                    dateAreaAnimate('date-switch-container', 608);
+                    setTimeout(function() {
+                        $('.date-switch-container').css('display', 'none');
+                    }, 250);
+                } else {
+                    $('.date-switch-container').css('display', 'none');
+                }
                 break;
             }
         }
@@ -585,7 +607,10 @@ function pluginOptions() {
 
             /* 切换选择未来时间的展示或者收缩 */
             case $('.part-right .predict-date-switch-container .switch-mode img')[0]: {
-                dateAreaAnimate('predict-date-switch-container', 334);
+                if ($('.predict-date-switch-container').is(':animated') == true) {
+                    return;
+                }
+                dateAreaAnimate('predict-date-switch-container', 410);
                 break;
             }
 
@@ -869,6 +894,7 @@ function checkMaxTime(minutes) {
         }
 
         $('.'+ containerClassName +' .choice-date-container').attr('choice-number', dateNumber-1);   // 标记已经选择的日期
+        $('.'+ containerClassName +' .choice-date-container').attr('choiced', 'false');  // 更新完日期选择区域，标记为没有选择。
     }
 
     /**
@@ -914,8 +940,50 @@ function checkMaxTime(minutes) {
 
             // 提交时间段请求
             case $('.date-switch-container button')[0]: {
+                if (ClassUtil.hasClass($('#heat-map')[0], 'mode-choiced') == false) {
+                    showError('请选择为热力图模式');
+                    return;
+                }
                 clearTimeout(window.realHeatmapTimeoutID);   // 当为时间段请求的时候，停止实时更新
-                timeQuantumHeatmapRequest();
+                timeQuantumHeatmapRequest();                // 请求时间段的热力图
+                break;
+            }
+
+            // 以下为预测未来时候的时间表的监听
+            // 选择模式下拉表的展示。车流量/需求量
+            case $('.predict-date-switch-container .predict-data-mode div')[0]: {
+                showList($('.data-mode-list')[0]);
+                break;
+            }
+            // 初始化预测未来的日历
+            case $('.predict-date-switch-container .date-container div div')[0]: {
+                showList($('.predict-date-list')[0]);
+                dateChoiceAreaRenew('predict-date-list', $(event.target).prev()[0].innerText);   
+                break;
+            }
+
+            // 初始化预测未来的小时选择
+            case $('.predict-date-switch-container .date-container div div')[1]: {
+                showList($('.predict-time-list')[0]);
+                timeChoiceAreaRenew('predict-time-list', $(event.target).prev()[0].innerText);   
+                break;
+            }
+
+            // 提交预测时间申请
+            case $('.predict-date-switch-container button')[0]: {
+                // 连接到请求函数
+                // 先选择为热力图模式
+                if (ClassUtil.hasClass($('#heat-map')[0], 'mode-choiced') == false) {
+                    showError('请选择为热力图模式');
+                    return;
+                }
+                clearTimeout(window.realHeatmapTimeoutID);   // 当为时间段请求的时候，停止实时更新
+                // 当模式是1时候，请求车辆数量热力图
+                if ($('.data-mode-list').attr('data-mode') == '1') {
+                    predictCountRequest();
+                } else {   // 当模式是2时候，请求需求量热力图
+                    predictDemandedRequest();
+                }
                 break;
             }
         }
@@ -997,6 +1065,7 @@ function checkMaxTime(minutes) {
         for (i = year; i >= 1960; i--) {
             $('.year-select-list')[0].innerHTML += '<li>'+ i +'年</li>';
             $('.year-select-list')[1].innerHTML += '<li>'+ i +'年</li>';
+            $('.year-select-list')[2].innerHTML += '<li>'+ i +'年</li>';
         }
     })();
 
@@ -1071,7 +1140,7 @@ function checkMaxTime(minutes) {
     }
 
     /**
-     * @description 对下拉列表进行事件监听
+     * @description 对所有选择年份月份日期的下拉列表进行事件监听
      * @param {Object} event 选择日期的下拉列表的事件监听
      */
     function dateDownListListen(event) {
@@ -1087,6 +1156,7 @@ function checkMaxTime(minutes) {
                 $(event.target).parent('div').children('li:eq('+ choicedNumber +')').removeClass('date-choiced');
             }
             $(event.target).addClass('date-choiced');
+            $(event.target).parents('.choice-date-container').attr('choiced', 'true');  // 当选完日期，将容器标志位已经选择完日期
         }
         
         switch($(event.target).attr('class')) {
@@ -1104,7 +1174,7 @@ function checkMaxTime(minutes) {
                     date = $(event.target).parents('.date-list').children('.choice-date-container').attr('choice-number');
 
                 /* 提交结果不对时候，将下拉栏隐藏起来，然后没改变 */
-                if (typeof date == 'undefined') {
+                if (typeof date == 'undefined' || $(event.target).parents('.date-list')[0].getElementsByClassName('choice-date-container')[0].getAttribute('choiced') == 'false') {
                     hiddenDownList($(event.target).parents('.date-list')[0]);
                     return;
                 }
@@ -1116,7 +1186,12 @@ function checkMaxTime(minutes) {
                 if (ClassUtil.hasClass($(event.target).parents('.date-list')[0], 'start-date-list') == true) {  // 当它是起始时间段的时候
                     dateSpan = $('#start-date span')[0];
                 } else {
-                    dateSpan = $('#end-date span')[0];
+                    if (ClassUtil.hasClass($(event.target).parents('.date-list')[0], 'end-date-list') == true) {  // 当这个选择框是终止时间段的时候
+                        dateSpan = $('#end-date span')[0];
+                    } else {  // 当这个选择框是预测选择框的时候
+                        dateSpan = $('#predict-date span')[0];
+                    }
+                    
                 }
                 /* 将时间填满 */
                 dateSpan.innerText = year
@@ -1192,10 +1267,15 @@ function checkMaxTime(minutes) {
                 minutes = minutes < 10 ? '0' + minutes : minutes;
                 hours = hours < 10 ? '0' + hours : hours;
                 
-                if (ClassUtil.hasClass($(event.target).parents('.time-list')[0], 'start-time-list')) {
+                if (ClassUtil.hasClass($(event.target).parents('.time-list')[0], 'start-time-list')) {  // 当这个选择框是开始时间下拉框时候
                     timeSpan = $('#start-time span')[0];
                 } else {
-                    timeSpan = $('#end-time span')[0];
+                    if (ClassUtil.hasClass($(event.target).parents('.time-list')[0], 'end-time-list')) {    // 当这个选择框是终止时间下拉框时候
+                        timeSpan = $('#end-time span')[0];
+                    } else {    // 当这个选择框是预测时间下拉框时候
+                        timeSpan = $('#predict-time span')[0];
+                    }
+                    
                 }
 
                 timeSpan.innerText = hours + ':' + minutes;
@@ -1211,36 +1291,66 @@ function checkMaxTime(minutes) {
         }
     }
 
+    function dataModeDownListListen(event) {
+        event.stopPropagation();
+        switch(event.target) {
+            case $('.data-mode-list span')[0]: {
+                /* 下拉框的选择是已经选择时候，点击无效 */
+                if (ClassUtil.hasClass($('.data-mode-list span')[0], 'data-mode-choiced') == true) {
+                    break;
+                }
+                /* 切换样式 */
+                ClassUtil.addClass($('.data-mode-list span')[0], 'data-mode-choiced');
+                ClassUtil.removeClass($('.data-mode-list span')[1], 'data-mode-choiced');
+                $('.data-mode-list').attr('data-mode', '1');  // 切换模式
+                break;
+            }
+
+            case $('.data-mode-list span')[1]: {
+                /* 下拉框的选择是已经选择时候，点击无效 */
+                if (ClassUtil.hasClass($('.data-mode-list span')[1], 'data-mode-choiced') == true) {
+                    break;
+                }
+                /* 切换样式 */
+                ClassUtil.addClass($('.data-mode-list span')[1], 'data-mode-choiced');
+                ClassUtil.removeClass($('.data-mode-list span')[0], 'data-mode-choiced');
+                $('.data-mode-list').attr('data-mode', '2');  // 切换模式
+                break;
+            }
+        }
+        hiddenDownList($('.data-mode-list')[0]);
+    }
 
     /* 添加事件监听区域 */
     EventUtil.addHandler($('.date-switch-container')[0], 'click', dateContainerListen);
+    EventUtil.addHandler($('.predict-date-switch-container')[0], 'click', dateContainerListen);
+    EventUtil.addHandler($('.data-mode-list')[0], 'click', dataModeDownListListen);
     EventUtil.addHandler(document, 'click', function() {
         var i;
 
         /* 对所有下拉栏进行隐藏 */
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 3; i++) {
             hiddenDownList($('.date-list')[i]);
             hiddenDownList($('.time-list')[i]);
         }
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < 5; i++) {
             hiddenDownList($('.time-scroll-cut')[i]);
             hiddenDownList($('.scroll-cut')[i]);
         }
+        hiddenDownList($('.data-mode-list')[0]);
     })
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 6; i++) {
         EventUtil.addHandler($('.scroll-cut')[i], 'click', dateSelectListListen);
         EventUtil.addHandler($('.time-scroll-cut')[i], 'click', timeSelectListListen);
     }
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 3; i++) {
         EventUtil.addHandler($('.time-list')[i], 'click', timeDownListListen);
         EventUtil.addHandler($('.date-list')[i], 'click', dateDownListListen);
+        /* 初始化小时和分钟下拉框 */
+        hoursSelectRenew($('.hours-select-list')[i]);
+        minutesSelectRenew($('.minutes-select-list')[i]);
     }
-    /* 初始化小时和分钟下拉框 */
-    hoursSelectRenew($('.hours-select-list')[0]);
-    hoursSelectRenew($('.hours-select-list')[1]);
-    minutesSelectRenew($('.minutes-select-list')[0]);
-    minutesSelectRenew($('.minutes-select-list')[1]);
 })();
 
 /**
@@ -1292,6 +1402,28 @@ function showError(text) {
 }
 
 /**
+ * @version 1.0
+ * @description 对预测未来的时间进行校测
+ * @param {Number} minutes 最大的时间跨度（分钟）
+ */
+function checkPredictTime(minutes) {
+    var predictTime = $('#predict-date span')[0].innerText + ' ' + $('#predict-time span')[0].innerText,
+        currentTime = getCurrentTime(),
+        start = new Date(currentTime),
+        end = new Date(predictTime);
+    
+    if (predictTime.slice(0, 1) == '-' || currentTime.slice(0, 1) == '-') {
+        return false;
+    }
+    /* 检查是否超过限制时间 */
+    if ((parseInt(end - start) / 60000) > minutes) {
+        return false;
+    }
+    return true;
+}
+
+
+/**
  * @version 1.0 
  * @description 实时更新热力图的请求函数
  */
@@ -1300,16 +1432,12 @@ function realTimeHeatmapRequest() {
         container = $('#map-container')[0],
         leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
         rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
-        time = new Date();
-
         
     jsonObj.leftTopLon = leftTop.getLng();
     jsonObj.leftTopLat = leftTop.getLat();
     jsonObj.rightBottomLon = rightBottom.getLng();
     jsonObj.rightBottomLat = rightBottom.getLat();
-    jsonObj.currentTime = window.currentDate + (time.getHours() < 0? '0' + time.getHours():time.getHours())
-                                             + ':' + (time.getMinutes() < 10? '0' + time.getMinutes(): time.getMinutes())
-                                             + ':' + (time.getSeconds() < 10? '0' + time.getSeconds():time.getSeconds());
+    jsonObj.currentTime = getCurrentTime();
     
     $.ajax({
         url: 'http://'+ window.ip +':8080/qgtaxi/maps/liveheatmap',
@@ -1334,6 +1462,12 @@ function realTimeHeatmapRequest() {
                 case '5001': {
                     // 预测数据缺失
                     showError('数据缺失');
+                    break;
+                }
+
+                case '5002': {
+                    // 前端数据格式出错
+                    showError('前端数据格式出错');
                     break;
                 }
             }
@@ -1371,7 +1505,7 @@ function timeQuantumHeatmapRequest() {
     jsonObj.rightBottomLon = rightBottom.getLng();
     jsonObj.rightBottomLat = rightBottom.getLat();
     jsonObj.startTime = $('#start-date span')[0].innerText.replace(/\//g, '-') + ' ' + $('#start-time span')[0].innerText + ':00';
-    jsonObj.endTime = $('#start-date span')[0].innerText.replace(/\//g, '-') + ' ' + $('#end-time span')[0].innerText + ':00';
+    jsonObj.endTime = $('#end-date span')[0].innerText.replace(/\//g, '-') + ' ' + $('#end-time span')[0].innerText + ':00';
     $.ajax({
         url: 'http://'+ window.ip +':8080/qgtaxi/maps/querymap',
         type: 'post',
@@ -1397,6 +1531,12 @@ function timeQuantumHeatmapRequest() {
                     showError('数据缺失');
                     break;
                 }
+
+                case '5002': {
+                    // 前端数据格式出错
+                    showError('前端数据格式出错');
+                    break;
+                }
             }
             
         },
@@ -1409,23 +1549,165 @@ function timeQuantumHeatmapRequest() {
 
 /**
  * @version 1.0
+ * @description 预测未来一个时间点的车流里的热力图
+ */
+function predictCountRequest() {
+    var jsonObj = {},
+    container = $('#map-container')[0],
+    leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
+    rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight)),    // 右下角坐标
+    date = $('#predict-date span')[0].innerText,
+    time = $('#predict-time span')[0].innerText;
+
+    // 判断是否输入日期
+    if (date.slice(0, 1) == '-' || time.slice(0, 1) == '-') {
+        showError('请输入想要预测的日期');
+        return;
+    }
+
+    jsonObj.leftTopLon = leftTop.getLng();
+    jsonObj.leftTopLat = leftTop.getLat();
+    jsonObj.rightBottomLon = rightBottom.getLng();
+    jsonObj.rightBottomLat = rightBottom.getLat();
+    jsonObj.predictedTime = date.replace(/\//g, '-') + ' ' + time + ':00';
+
+    console.log('车辆流量')
+    console.log(jsonObj);
+
+    $.ajax({
+        url: 'http://'+ window.ip +':8080/qgtaxi/maps/count',
+        type: 'post',
+        data: JSON.stringify(jsonObj),
+        dataType: 'json',
+        processData: false,
+        contentType: 'application/json',
+        success: function(responseObj) {
+            switch(responseObj.status) {
+                case '2000': {
+                    heatmapDisplay(responseObj);
+                    break;
+                }
+
+                case '5000': {
+                    // 服务器内部错误
+                    showError('服务器内部错误');
+                    break;
+                }
+
+                case '5001': {
+                    // 数据缺失
+                    showError('数据缺失');
+                    break;
+                }
+
+                case '5002': {
+                    // 前端数据格式出错
+                    showError('前端数据格式出错');
+                    break;
+                }
+            }
+            
+        },
+        error: function() {
+            // 请求失败时要干什么
+            showError('请求失败');
+        }
+    });
+}
+
+/**
+ * @version 1.0
+ * @description 预测未来某个时间点的出租车需求量
+ */
+function predictDemandedRequest() {
+    var jsonObj = {},
+    container = $('#map-container')[0],
+    leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
+    rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight)),    // 右下角坐标
+    date = $('#predict-date span')[0].innerText,
+    time = $('#predict-time span')[0].innerText;
+
+    // 判断是否输入日期
+    if (date.slice(0, 1) == '-' || time.slice(0, 1) == '-') {
+        showError('请输入想要预测的日期');
+        return;
+    }
+
+    jsonObj.leftTopLon = leftTop.getLng();
+    jsonObj.leftTopLat = leftTop.getLat();
+    jsonObj.rightBottomLon = rightBottom.getLng();
+    jsonObj.rightBottomLat = rightBottom.getLat();
+    jsonObj.predictedTime = date.replace(/\//g, '-') + ' ' + time + ':00';
+
+    console.log('车辆需求量')
+    console.log(jsonObj);
+
+    $.ajax({
+        url: 'http://'+ window.ip +':8080/qgtaxi/maps/demanded',
+        type: 'post',
+        data: JSON.stringify(jsonObj),
+        dataType: 'json',
+        processData: false,
+        contentType: 'application/json',
+        success: function(responseObj) {
+            switch(responseObj.status) {
+                case '2000': {
+                    heatmapDisplay(responseObj);
+                    break;
+                }
+
+                case '5000': {
+                    // 服务器内部错误
+                    showError('服务器内部错误');
+                    break;
+                }
+
+                case '5001': {
+                    // 数据缺失
+                    showError('数据缺失');
+                    break;
+                }
+
+                case '5002': {
+                    showError('前端数据格式出错');
+                    break;
+                }
+            }
+            
+        },
+        error: function() {
+            // 请求失败时要干什么
+            showError('请求失败');
+        }
+    });
+}
+
+
+/**
+ * @version 1.0
  * @description 将传回的数据显示出来。
  * @param {Objec} jsonObj 传回的数据对象
  */
 function heatmapDisplay(jsonObj) {
     var pointSet = jsonObj.pointSet,
         i,
-        list = [];
+        list = [],
+        maxWeight = 0;
 
     for (i = 0; i < pointSet.length; i++) {
+        if (maxWeight < pointSet[i].weight) {
+            maxWeight = pointSet[i].weight;
+        }
         list.push({
             lng: pointSet[i].lon,
             lat:pointSet[i].lat,
             count: pointSet[i].weight
         });
     }
+    // maxWeight = maxWeight * 0.6;
     heatmap.setDataSet({
-        data: list
+        data: list,
+        // max: maxWeight
     });
 }
 

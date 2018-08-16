@@ -1,5 +1,22 @@
-window.ip = '192.168.1.105';
+window.ip = '192.168.1.110';
 window.currentDate = '2017-02-01 ';
+
+/**
+ * @description 获得当前时间并且模拟为2017年的某一天
+ * @private currentTime 这个时间内部的数字是可以通过改变来改变所获得的时间
+ */
+function getCurrentTime() {
+    var time = new Date(),
+        currentTime =  '2017-'
+                    + ((time.getMonth() + 5) < 10 ? '0' + (time.getMonth() + 5) : (time.getMonth() + 5)) + '-'
+                    + ((time.getDate() - 15) < 10 ? '0' + (time.getDate() - 15) : (time.getDate() - 15)) + ' '
+                    + (time.getHours() < 0? '0' + time.getHours():time.getHours())
+                    + ':' + (time.getMinutes() < 10? '0' + time.getMinutes(): time.getMinutes())
+                    + ':' + (time.getSeconds() < 10? '0' + time.getSeconds():time.getSeconds());
+    return currentTime;
+}
+
+
 
 /**
  * 这是一个兼容性的监听事件。只需要直接用这个对象的方法就行。惰性加载函数，所以控制台输出只能是当前浏览器支持的监听事件
