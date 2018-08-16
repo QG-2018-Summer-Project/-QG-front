@@ -36,6 +36,7 @@ button {
 }
 .panel-main-container {
     overflow: hidden;
+   
 }
 .panel-right-container {
     display: flex;
@@ -81,7 +82,7 @@ button {
     height: auto;
     width: 100%;
     background-color: #21d67c;
-    border-radius: 10px; 
+    border-radius: 0 10px 0 0; 
     padding: 16px 0;
 }
 /* 选择地点 */
@@ -107,7 +108,7 @@ button {
     width: auto;
 }
 .label-container {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     font-size: 18px;
 }
 .loaction-container img {
@@ -116,16 +117,30 @@ button {
 }
 .location-input-container {
     height: auto;
-    width: 140px;
-    background-color: gray;
+    width: 135px;
+    background-color: snow;
     border-radius: 20px;
+    box-shadow: 0 0 1px 0 #222;  
+    position: relative; 
+}
+.clear-input-button {
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+    background: url(../images/clearInput.png) no-repeat center;
+    background-size: contain;
+    position: absolute;
+    top: 50%;
+    margin-top: -10px;
+    right: 5px;
 }
 .location-input {
-    display: block;
-    height: 30px;
-    width: 120px;
-    padding: 3px 15px;
+    display: inline-block;
+    height: 24px;
+    width: 90px;
+    padding: 3px 0 3px 15px;
     background: transparent;
+    font-size: 12px;
 }
 /* 搜索栏 */
 .search-container {
@@ -200,19 +215,22 @@ button {
     overflow: hidden;
     box-shadow: 0 0 6px 0 rgba(31, 31, 31, .4);
 }
-.nav-2 {
+.nav-2-li {
     height: 60px;
     line-height: 60px;
     width: 100%;
     background-color: #fff;
     cursor: pointer;
 }
-.nav-2 img {
+.nav-2-li:hover {
+    background-color: #bfffdf;
+}
+.nav-2-li img {
     height: 25px;
     width: 25px;
     padding: 0 30px;
 }
-#rate {
+.middle-li {
     margin: 2px 0;
 }
 /* 右边区域的样式 */

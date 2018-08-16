@@ -31,7 +31,7 @@ var EventUtil = {
     removeHandler: (function() {
         if (window.addEventListener) {
             return function () {
-                arguments[0].removeEventListener(arguments[1], arguments[2], false);
+                arguments[0].removeEventListener(arguments[1], arguments[2]);
             };
         } else if (window.attachEvent) {
             return function () {
