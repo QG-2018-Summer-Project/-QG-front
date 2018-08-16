@@ -187,7 +187,7 @@ body {
 } 
 
 /* 二级菜单 */
-.nav-2-container {
+.nav-2-container, .route-container {
     height: 0;
     width: 100%;
     background-color: #21d67c;
@@ -196,10 +196,12 @@ body {
     transition: height .5s, padding .5s;
     will-change: height, padding;
 }
+/* 显示二级菜单的动画 */
 .show-nav-animatiton .nav-2-container {
     height: 180px;
     padding: 16px 0;
 }
+
 .nav-2-ul {
     width: 400px;
     height: auto;
@@ -226,6 +228,22 @@ body {
 .middle-li {
     margin: 2px 0;
 }
+
+.route-container {
+    
+}
+.show-nav-animatiton .route-container {
+    height: auto;   
+}
+.route-ul {
+    box-shadow: none;
+    border-radius: 0;
+}
+.route-li {
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
 /* 右边区域的样式 */
 .part-right {
     height: 100%;

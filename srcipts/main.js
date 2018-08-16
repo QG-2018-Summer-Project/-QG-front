@@ -231,9 +231,9 @@ function startRoute(start, end) {
 function drawRoute(routes, length) {
     //不同的路线颜色不相同
     var colors = [
-        '#0cf',
-        '#459c50',
-        '#21D67C'
+        'blue',
+        'red',
+        'yellow'
     ];
     for (var i = 0; i < length; i++) {
         var route = routes[i],
@@ -273,16 +273,16 @@ function addOverlays(paths, color) {
     map.routes.push(_overlays[0]);
 
     //绑定事件
-    AMap.event.addListener(_overlays[0], 'click', selectRouteCallBack);
+    AMap.event.addListener(_overlays[0], 'click', selectRoute);
 
     console.log(map.routes);
     map.setFitView();
 }
 /**
- * 点击某条路线时的callback函数
+ * 选择或者点击某条路线时的callback函数
  * @param {*} event 
  */
-function selectRouteCallBack(event) {
+function selectRoute(event) {
     for (let i = 0; i < map.routes.length; i++) {
         map.routes[i].setOptions({
             zIndex: 50,
@@ -294,7 +294,9 @@ function selectRouteCallBack(event) {
         zIndex: 51
     });
 }
+function showRoutesPanel() {
 
+}
 /**
  * 清除所有路线
  */
