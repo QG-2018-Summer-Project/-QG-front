@@ -1,5 +1,9 @@
 body {
     height: auto;
+    overflow: hidden;
+}
+button {
+    display: block;
 }
 .root {
     height: 100vh;
@@ -35,9 +39,12 @@ body {
    
 }
 .panel-right-container {
+    display: flex;
     flex: 1;
+    justify-content: center;
+    align-items: center;
     background-color: #222;
-    opacity: .8;
+    opacity: .9;
     height: 100%;
     z-index: 0;
     position: relative;
@@ -271,13 +278,14 @@ body {
     height: 100%;
     width: 100%;
 }
-.diplay-data {
+.display-data {
     position: absolute;
+    display: none;
     z-index: 11;
     width: 480px;
     height: 480px;
     border-radius: 12px;
-    background-color: rgba(255, 255, 255, .72)
+    background-color: rgba(255, 255, 255, .99)
 }
 #show-type {
     display: block;
@@ -295,11 +303,11 @@ body {
     right: 16px;
     background-image: url(../images/icon_cross_large_selected.png);
 }
-.diplay-data .data-container {
+.display-data .data-container {
     margin-top: 20px;
     align-items:center;
 }
-.diplay-data div,.diplay-data div:hover {
+.display-data div,.display-data div:hover {
     background-position: center center;
     background-size: 100%;
 }
@@ -349,48 +357,115 @@ body {
 .first-circle {
     margin-left: 0!important;
 }
-.switch-box {
+/* .switch-box li{
     position: fixed;
     z-index: 11;
     right: 30px;
     top: 98px;
-}
+} */
 .switch-box li {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: fixed;
+    right: 30px;
+    top: 234px;
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: 24px;
     margin-bottom: 20px;
     z-index: 11;
+    overflow: hidden;
     background-color: white;
     box-shadow: 0px 0px 8px 3px rgba(66, 66, 66, .2);
+}
+.map-mode-switch-container {
+    top: 98px!important;
+}
+.time-mode-switch-container {
+    top: 166px!important;
+}
+.location-button {
+    justify-content: center;
+    align-items: center;
 }
 .switch-box li img,.switch-mode img {
     cursor: pointer;
     display: block;
-    width: 26px;
-    height: 26px;
-    margin: 0px auto;
+    /* width: 26px;
+    height: 26px; */
+    /* margin: 0px auto; */
+}
+.modeChoice {
+    justify-content: center;
+    align-items: center;
+    float: left;
+    width: 60px;
+    height: 48px;
+}
+.modeChoice:hover {
+    background-color: #eee;
+}
+.modeChoice:nth-child(odd) {
+    border-top-left-radius: 24px;
+    border-bottom-left-radius: 24px;
+}
+.modeChoice:nth-child(even) {
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+.mode-choiced {
+    background-color: #eee;
 }
 .date-container {
     justify-content: center;
     align-items: center;
     width: 520px;
     height: 48px;
+    float: left;
 }
-.date-switch-container {
+.date-container span {
+    display: block;
+    line-height: 14px;
+}
+.date-container>div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.static {
+    cursor: pointer;
+    width: 16px;
+    height: 10px;
+    margin-left: 2px;
+    background: url(../images/arrow_down.png) center center no-repeat;
+    background-size: 100%;
+    /* transform: rotateZ(-90deg);
+    transition: transform .5s ease;  */
+}
+/* .dropdown-transform {
+    transform: rotateZ(0deg);
+} */
+.date-switch-container,.predict-date-switch-container {
     position: fixed;
     top: 30px; 
     right: 30px;
-    width: 560px;
+    width: 48px;
+    height: 48px;
     z-index: 11;
     font-size: 18px;
     border-radius: 24px;
     background-color: white;
     box-shadow: 0px 0px 8px 1px rgba(66, 66, 66, .2);
     overflow: hidden;
+}
+.date-switch-container button,.predict-date-switch-container button {
+    float: left;
+    width: 48px;
+    height: 48px;
+    font-size: 14px;
+    background-color: #21d67c;
+    color: #fff;
+}
+.predict-date-switch-container .date-container {
+    width: 240px;
 }
 .switch-mode {
     position: absolute;
@@ -400,9 +475,9 @@ body {
     right: 0;
     width: 48px;
     height: 48px;
+    border-radius: 24px;
     background-color: white;
 }
-
 .date-container div {
     border-radius: 40px;
     background-color: #EEEEEE;
@@ -411,10 +486,16 @@ body {
     width: 128px;
     height: 36px;
 }
+.date:hover {
+    background-color: #e5e5e5;
+}
 .time {
     width: 88px;
     height: 36px;
     margin-left: 10px;
+}
+.time:hover {
+    background-color: #e5e5e5;
 }
 .date-center {
     width: 28px;
@@ -422,6 +503,309 @@ body {
     margin: 0 6px;
     background: url(../images/time_center.png) center center no-repeat;
     background-color: white!important;
+}
+/* 下拉列表的样式 */
+.date-list {
+    position: absolute;
+    display: none;
+    width: 260px;
+    top: 70px;
+    right: 260px;
+    border-radius: 12px;
+    background-color: white;
+    z-index: 111;
+    transition: transform .35s ease, opacity .35s ease;
+    opacity: 0;
+    transform: translateY(0px);
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+}
+.start-date-list {
+    right: 380px;
+}
+.end-date-list {
+    right: 110px;
+}
+.down-list-transform {
+    opacity: 1!important;
+    transform: translateY(20px);
+}
+.choice-submit-container {
+    width: 100%;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.choice-submit-container>button {
+    width: 108px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 17px;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+}
+.certain {
+    margin-right: 20px;
+    background-color: #21d67c;
+    color: white;
+}
+.certain:hover {
+    background-color: #39BA7A;
+}
+.cancel {
+    background-color: #fff;
+}
+.cancel:hover {
+    background-color: #eee;
+}
+.choice-year-month-select-container {
+    width: 100%;
+    height: 52px;
+    justify-content: center;
+    align-items: center;
+}
+.choice-year-month-select-container>div {
+    height: 36px;
+    line-height: 36px;
+    background-color: #EEEEEE;
+    border-radius: 18px;
+}
+.year-select-switch {
+    width: 96px;
+}
+.month-select-switch {
+    width: 88px;
+    margin-left: 10px;
+}
+.year-select-switch:hover,.month-select-switch:hover,.hours-switch:hover,.minutes-switch:hover {
+    background-color:#e5e5e5;
+}
+.choice-year-month-select-container>div>div {
+    float: right;
+    margin-top: 14px;
+    margin-right: 10px;
+}
+.choice-year-month-select-container span {
+    display: block;
+    float: left;
+    margin-left: 13px;
+}
+.choice-weekDay-container {
+    width: 227.5px;
+    height: 20px;
+    margin: 0 auto;
+}
+.choice-weekDay-container>li {
+    float: left;
+    width: 32.5px;
+    height: 20px;
+    text-align: center;
+    font-size: 12px;
+}
+.choice-date-container {
+    width: 228px;
+    margin: 5px auto;
+    transform: translate(-4.5px);
+}
+.choice-date-container::after {
+    content: "";
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+.choice-date-container li {
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+    border-radius: 50%;
+    line-height: 21px;
+}
+.date-choiced {
+    background-color: rgba(66, 214, 124, .75);
+    border: 1.5px solid rgba(66, 214, 124, .75)!important;
+}
+.choice-date-container * {
+    float: left;
+    width: 21px;
+    height: 21px;
+    margin-left: 8.5px;
+    margin-top: 1px;
+    border: 1.5px solid white;
+}
+.choice-date-container li:hover {
+    border: 1.5px solid rgba(66, 214, 124, .75);
+}
+.scroll-cut {
+    position: absolute;
+    border-radius:8px;
+    overflow: hidden;
+    height: 140px;
+    top: 30px;
+    box-shadow: 0 0 8px 2px rgba(66, 66, 66, .2);
+    z-index: 12;
+    display: none;
+    opacity: 0;
+    transition: transform .35s ease, opacity .35s ease;
+}
+.cut-first {
+    width: 96px;
+    left: 34px;
+}
+.scroll-cut:last-child {
+    width: 88px;
+    right: 30px;
+}
+.choice-year-month-select-container ul {
+    position: absolute;
+    display: block;
+    height: 140px;
+    z-index: 12;
+    background-color: #fff;
+    overflow: auto;
+}
+.year-select-list {
+    width: 112px;
+    left: 0px;
+}
+.year-select-list li,.month-select-list li {
+    cursor: pointer;
+    width: 100%;
+    height: 24px;
+    line-height: 24px;
+    font-size: 12px;
+    text-align: center;
+}
+.month-select-list {
+    width: 104px;
+    /* right: 33px; */
+}
+.year-select-list li:hover,.month-select-list li:hover {
+    background-color: #21D67C;
+    color: white;
+}
+.time-list {
+    position: absolute;
+    display: none;
+    top: 70px;
+    width: 260px;
+    border-radius: 8px;
+    z-index: 12;
+    background-color: #fff;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+    opacity: 0;
+    transition: transform .5s ease,opacity .5s ease;
+}
+.start-time-list {
+    right: 260px;
+}
+.end-time-list {
+    right: 40px;
+}
+.time-switch-container {
+    width: 100%;
+    height: 100px;
+    justify-content: center;
+    align-items: center;
+}
+.time-switch-container>div {
+    height: 36px;
+    line-height: 36px;
+    background-color: #EEEEEE;
+    border-radius: 18px;
+    width: 88px;
+}
+.time-switch-container>div>div {
+    float: right;
+    margin-right: 15px;
+    margin-top: 14px;
+}
+.time-switch-container>div>span {
+    margin-left: 13px;
+}
+.time-switch-container>div:last-child {
+    margin-left: 10px;
+}
+.minutes-switch {
+    margin-left: 16px;
+}
+.time-scroll-cut {
+    position: absolute;
+    display: none;
+    top: 55px;
+    width: 88px;
+    height: 100px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 12px;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+    z-index: 12;
+    opacity: 0;
+    transition: transform .5s ease,opacity .5s ease;
+}
+.time-scroll-cut:last-child {
+    right: 35px;
+}
+.time-scroll-cut-first {
+    left: 35px;
+}
+.hours-select-list,.minutes-select-list {
+    width: 105px;
+    height: 100px;
+    overflow: auto;
+}
+.hours-select-list li,.minutes-select-list li {
+    cursor: pointer;
+    width: 100%;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+}
+.hours-select-list li:hover,.minutes-select-list li:hover,.select-choiced {
+    background-color: #21D67C;
+    color: #fff;
+}
+.float-layer {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    background-color: rgba(138, 138, 138, .5);
+    z-index: 13;
+}
+.float-layer>div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-200px,-160px);
+    width: 400px;
+    height: 224px;
+    border-radius: 16px;
+    background-color: #fff;
+    opacity: 0;
+    transition: transform .5s ease,opacity .5s ease;
+}
+.float-layer>div>span {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 74px;
+    font-size: 22px;
+    color: #424242;
+}
+.float-layer>div>button {
+    display: block;
+    width: 160px;
+    height: 48px;
+    margin: 46px auto;
+    background-color: #21d67c;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #fff;
+    box-shadow: 0 0 4px 1px rgba(5, 31, 18, .2);
+}
+.float-layer>div>button:hover,.date-switch-container button:hover {
+    background-color: #39BA7A;
 }
 /* 日期控件
 .date-container {

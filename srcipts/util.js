@@ -1,38 +1,5 @@
-window.ip = '192.168.31.88';
-
-/**
- * 这是发送所有请求的方法，所有的servlet请求都要经过这个函数
- * @func
- * @param {String} serverAddress 服务器地址
- * @param {String} method 请求方式
- * @param {String} sendData 要发送的数据
- * @param {String} sendDataType 数据类型
- * @param {String} contentTypes 请求头
- * @param {Function} successCallback 请求成功后的执行函数。两个函数的第一个参数都是请求对象，第二个参数都是状态码
- * @param {Function} errorCallback 请求失败时候的执行函数。
- */
-function ajaxRequest(serverAddress, method, sendData, sendDataType, contentType , successCallback, errorCallback) {
-    $.ajax({
-    	url: serverAddress,
-    	type: method,
-        data: sendData,
-        dataType: sendDataType,
-    	processData: false,
-    	//contentType: contentTypes,
-        success: successCallback,
-        error: errorCallback
-    	});
-}
-
-/**
- * 当测试结果不为空，则返回true，当测试结果为空的时候，则返回false。
- * @func
- * @param {RegExp} pattern 正则表达式
- * @param {String} text 要验证的正则表达式
- */
-function RegExpTest(pattern, text) {
-    return pattern.exec(text) !== null ? true : false;
-}
+window.ip = '192.168.1.105';
+window.currentDate = '2017-02-01 ';
 
 /**
  * 这是一个兼容性的监听事件。只需要直接用这个对象的方法就行。惰性加载函数，所以控制台输出只能是当前浏览器支持的监听事件
@@ -110,7 +77,7 @@ var ClassUtil = {
 
     removeClass: function(elements, cName) {
         if (ClassUtil.hasClass(elements, cName)) {
-            elements.className = elements.className.replace(new RegExp("(\\s|^)" + cName + "(\\s|$)"), " ");
+            elements.className = elements.className.replace(new RegExp("(\\s|^)" + cName + "(\\s|$)"), "");
         }
     },
 
