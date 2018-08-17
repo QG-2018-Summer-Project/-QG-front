@@ -172,3 +172,17 @@ button {
     cursor: pointer;
     margin-right: 5px;
 }
+.recommand {
+    height: 28px;
+    width: 56px;
+    line-height: 28px;
+    background-color: #21d67f;
+    font-size: 15px;
+    border-radius: 3px;
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    margin-top: -14px;
+    text-align: center;
+}

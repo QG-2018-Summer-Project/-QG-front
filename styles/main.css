@@ -161,6 +161,7 @@ body {
 }
 /* 一级导航栏 */
 .nav-1 {
+    height: auto;
     line-height: 72px;
     width: 100%;
     border-bottom: 2px solid #eeeeee;
@@ -172,7 +173,7 @@ body {
     width: 22px;
     padding: 0 35px 0 40px;
 }
-.show-nav-button {
+.show-second-menu-button {
     height: 24px;
     width: 24px;
     position: absolute;
@@ -182,10 +183,15 @@ body {
     top: 24px;
     transition: transform .5s;
 }
-.show-nav-animatiton .show-nav-button {
+
+/* 按钮旋转 */
+
+.show-second-menu-animatiton .show-second-menu-button {
     transform: rotateZ(90deg);
 } 
-
+.show-second-menu-button-animation {
+    transform: rotateZ(90deg);
+}
 /* 二级菜单 */
 .nav-2-container, .route-container {
     height: 0;
@@ -197,12 +203,11 @@ body {
     will-change: height, padding;
 }
 /* 显示二级菜单的动画 */
-.show-nav-animatiton .nav-2-container {
+.show-second-menu-animatiton .nav-2-container {
     height: 180px;
     padding: 16px 0;
 }
-
-.nav-2-ul {
+.nav-2-ul, .route-ul {
     width: 400px;
     height: auto;
     border-radius: 10px;
@@ -210,14 +215,14 @@ body {
     overflow: hidden;
     box-shadow: 0 0 6px 0 rgba(31, 31, 31, .4);
 }
-.nav-2-li {
+.nav-2-li, .route-li {
     height: 60px;
     line-height: 60px;
     width: 100%;
     background-color: #fff;
     cursor: pointer;
 }
-.nav-2-li:hover {
+.nav-2-li:hover, .route-li:hover {
     background-color: #bfffdf;
 }
 .nav-2-li img {
@@ -228,23 +233,36 @@ body {
 .middle-li {
     margin: 2px 0;
 }
-
-.route-container {
-    
-}
-.show-nav-animatiton .route-container {
+.show-route-container {
     height: auto;   
 }
 .route-ul {
+    margin: 0 auto;
     box-shadow: none;
     border-radius: 0;
 }
 .route-li {
-    margin: 5px 0;
+    /* display: none; */
+    margin: 14px 0;
     border-radius: 5px;
+    position: relative;
+}
+.route-mode-1 {
+    height: 88px;
+}
+.route-mode-2 {
+    height: 161px;
+}
+.route-mode-3 {
+    
+    height: 236px;
 }
 
+
+
+
 /* 右边区域的样式 */
+
 .part-right {
     height: 100%;
     width: 100%;
