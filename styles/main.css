@@ -315,7 +315,7 @@ button {
     width: 12px;
     height: 12px;
     transform: scale(1.33);
-    background-color: #21D67C;
+    background-color: #21D67C!important;
     box-shadow: 0 0 1px 2px rgba(33, 214, 124, .2)
 }
 .first-circle {
@@ -808,6 +808,70 @@ button {
 .list-animate {
     opacity: 0;
     transition: transform .35s ease,opacity .35s ease;
+}
+/* 提示 */
+.tips {
+    position: absolute;
+    font-size: 12px;
+    background-color: transparent;
+    border-radius: 4px;
+    z-index: 15;
+}
+.tips div {
+    position: absolute;
+    z-index: 11;
+    line-height: 25px;
+    text-align: center;
+    color: #1f1f1f;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+}
+.tips::after,.tips::before {
+    position: absolute;
+    content: "";
+    display: block;
+    width: 8px;
+    height: 8px;
+    transform: rotate(45deg);
+    background-color: #fff;
+}
+.portrait-tips {
+    width: 60px;
+    height: 30px;
+}
+.portrait-tips div {
+    bottom: 0;
+}
+.portrait-tips::before {
+    right: 26px;
+    top: 1px;
+    z-index: 10;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+}
+.portrait-tips::after {
+    right: 26px;
+    top: 1px;
+    z-index: 12;
+}
+.transverse-tips {
+    width: 60px;
+    height: 25px;
+}
+.tips div {
+    width: 60px;
+    height: 25px;
+}
+.transverse-tips::before {
+    right: -4px;
+    top: 8.5px;
+    z-index: 10;
+    box-shadow: 0 0 4px 2px rgba(66, 66, 66, .2);
+}
+.transverse-tips::after {
+    right: -4px;
+    top: 8.5px;
+    z-index: 12;
 }
 /* 日期控件
 .date-container {

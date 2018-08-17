@@ -1,4 +1,8 @@
 window.heatmap = null;
+window.fullRateDates = null,
+window.flowDatas = null,
+window.crowdDatas = null;
+window.chartIndex = 0;
 /**
  * 异步加载地图
  */
@@ -595,6 +599,7 @@ function pluginOptions() {
      * @param {object} event 事件监听对象 
      */
     function partRightClickListen(event) {
+        hiddenTips();
         switch(event.target) {
             /* 切换选择时间段的区域的展示或者收缩 */
             case $('.part-right .date-switch-container .switch-mode img')[0]: {
@@ -602,6 +607,7 @@ function pluginOptions() {
                     return;
                 }
                 dateAreaAnimate('date-switch-container', 608);
+                
                 break;
             }
 
@@ -611,6 +617,7 @@ function pluginOptions() {
                     return;
                 }
                 dateAreaAnimate('predict-date-switch-container', 410);
+                
                 break;
             }
 
@@ -619,6 +626,7 @@ function pluginOptions() {
                 if ($(event.target).parents('li:eq(0)').is(':animated') == true) {
                     return;
                 }
+                
                 modeAreaAnimate($(event.target).parents('li:eq(0)'), 'icon_change.png');
                 // 调用切换热力图的函数
                 // realTimeHeatmapRequest();
@@ -644,6 +652,198 @@ function pluginOptions() {
         // 点击时间右边的箭头后，将箭头进行旋转。
     }
 
+    EventUtil.addHandler($('.part-right')[0], 'click', partRightClickListen);
+    for (var i = 0; i < 4; i++) {
+        EventUtil.addHandler($('.modeChoice img')[i], 'click', modeChangeListen)
+    }
+})();
+
+/**
+ * @description 展示数据图标
+ * @param {String} chartType 数据图表的类型
+ * @param {Number} number 数据图表的下标
+ */
+function showCharts(number) {
+    var currentHours = (new Date()).getHours(),
+        xAxisArr = [],
+        i,
+        // chartIndex = number || 0,
+        datasArr = [window.flowDatas, window.fullRateDates, window.crowdDatas];
+        window.charts = echarts.init($('#show-area')[0]);
+    for (i = -3; i < 3; i++) {
+        xAxisArr.push((currentHours + i) < 0? (currentHours + i) + 24 + '时': (currentHours + i) + '时');
+    }
+
+    // var fullRateOption = {
+    //     title : {
+    //         show: true,
+    //         text : '出租车的载客率统计',
+    //         x: 'center',
+    //         y: '10px',
+    //         textStyle: {
+    //             fontSize: 15,
+    //             fontWeight:600
+    //         }
+    //     },
+
+    //     series: [
+    //         {
+    //             name: '出租车载客率统计',
+    //             type: 'pie',
+    //             radius: '75%',
+    //             data: fullRateDates,
+    //             label: {
+    //                 normal: {
+    //                     show: true,
+    //                     position: 'inside',
+    //                     formatter:  '{b}: {c}\n({d}%)',
+    //                     textStyle: {
+    //                         fontWeight: 300,
+    //                         fontSize: 13
+    //                     }
+    //                 }
+    //             },
+                
+    //             itemStyle: {
+    //                 normal: {
+    //                     label: {
+    //                         show: true,
+    //                         textStyle: {
+    //                             fontWeight: 200,
+    //                             fontSize: 10
+    //                         },
+    //                         formatter: 100
+    //                     }
+    //                 },
+    //                 labelLine: {    //指示线状态
+    //                 show: true,
+    //                 smooth: 0.2,
+    //                 length: 10,
+    //                 length2: 20
+    //             }
+    //             },
+    //         }
+    //     ],
+    //     color: ['rgb(33,214,124)', 'rgb(222, 81, 69, .8)']
+    // };
+
+    /* 车流量变化率折线图配置 */
+    var flowOption = {
+        title: {
+            text: '车流量变化率',//图标标题
+            x: 'center'//水平居中
+        },
+        tooltip: {//提示框信息
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        legend: {//图例信息
+            data:[ 'A'],
+            top:40//图例位置（可设置top,bottom,left,right）
+        },
+        grid: {//图的位置
+            top: 80,
+            // bottom: 100
+        },
+        xAxis: [  //x坐标轴信息    
+            {
+               name : '/h',  //坐标单位
+               data: xAxisArr  //坐标上数值
+            }
+        ],
+        yAxis: [//y坐标轴信息
+            {
+                name : '/%',//坐标单位
+                type: 'value',
+                min:0,//坐标起始值
+                max:1  //坐标最大值
+            }
+        ],
+        series: [
+            {//A曲线
+                name:'A',
+                type:'line',
+                itemStyle:{ 
+                    normal:{ color: "#d14a61" } //坐标圆点的颜色
+                }, 
+                lineStyle:{ 
+                    normal:{ width:4,color: "#d14a61"  }//线条的颜色及宽度
+                },
+                label: {//线条上的数字提示信息
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                smooth: true,//线条平滑
+                data: window.flowDatas
+            }
+        ]
+    };
+
+    /* 利用率变化柱状图配置 */
+    var fullRateOption = {
+        title : {
+            show: true,
+            text : '出租车利用率',
+            x: 'center',
+            y: '50px',
+            textStyle: {
+                fontSize: 15,
+                fontWeight:600
+            }
+        },
+        tooltip: {//提示框信息
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        grid: {//图的位置
+            top: 80,
+            // bottom: 100
+        },
+        xAxis: [  //x坐标轴信息    
+            {
+                name: '/h',//坐标单位
+                data: xAxisArr,//坐标上数值
+                show:true,                  //---是否显示
+                position:'bottom',
+            }
+        ],
+        yAxis: [//y坐标轴信息
+            {
+                show:true,                  //---是否显示
+                position:'left',
+                name: '/%',//坐标单位
+                type: 'value',
+                min: 0,//坐标起始值
+                max: 1  //坐标最大值
+            }
+        ],
+
+        series: [
+            {
+                name: '出租车利用率',
+                type: 'bar',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top',
+                        textStyle: {
+                          color: 'red'
+                        }
+                    },  
+                },
+                data: window.fullRateDates,
+                lengendHoverLink: true,
+            },
+        ]
+    }
+
+    /* 拥挤率柱状图配置 */
+    var crowdOption = {}
+
     /**
      * @version 1.0
      * @description 对于数据展示区域的点击事件进行监听
@@ -654,145 +854,242 @@ function pluginOptions() {
             /* 关闭数据展示层 */
             case $('#close-show')[0]: {
                 $('.panel-right-container').css('z-index', '0');
+                EventUtil.removeHandler($('.display-data')[0], 'click', dataShowContainerClickListen);  // 移除事件监听
+                window.flowDatas = null;
+                window.fullRateDates = null;
+                window.crowdDatas = null;
                 break;
             }
 
             case $('.left-arrow')[0]: {
                 // 左箭头触发事件
+                ClassUtil.removeClass($('.circles-container li')[window.chartIndex], 'li-active')  // 移除上一个点的样式
+                if (window.chartIndex == 0) {
+                    window.chartIndex = 3;
+                }
+                window.chartIndex--;
+                console.log(window.chartIndex)
+                ClassUtil.addClass($('.circles-container li')[window.chartIndex], 'li-active')  // 增加这个点的样式
+                window.charts.clear();
+                chatsDisplay(window.chartIndex);
                 break;
             }
 
             case $('.right-arrow')[0]: {
                 // 右箭头触发事件
+                ClassUtil.removeClass($('.circles-container li')[window.chartIndex], 'li-active')  // 移除上一个点的样式
+                window.chartIndex = (window.chartIndex + 1) % 3;
+                ClassUtil.addClass($('.circles-container li')[window.chartIndex], 'li-active')  // 增加这个点的样式
+                window.charts.clear();
+                chatsDisplay(window.chartIndex);
                 break;
             }
         }
     }
 
-    EventUtil.addHandler($('.part-right')[0], 'click', partRightClickListen);
-    EventUtil.addHandler($('#close-show')[0], 'click', dataShowContainerClickListen);
-    for (var i = 0; i < 4; i++) {
-        EventUtil.addHandler($('.modeChoice img')[i], 'click', modeChangeListen)
-    }
-})();
-
-/**
- * @description 展示数据图标
- * @param {String} chartType 数据图表的类型
- */
-function showCharts(jsonObj) {
-    var fullRateDates = jsonObj;
-
-    fullRateOption = {
-        title : {
-            show: true,
-            text : '出租车的载客率统计',
-            x: 'center',
-            y: '10px',
-            textStyle: {
-                fontSize: 15,
-                fontWeight:600
+    for (i = 0; i < 3; i++) {
+        (function(i) {
+            $('.circles-container li')[i].onclick = function() {
+                ClassUtil.removeClass($('.circles-container li')[window.chartIndex], 'li-active')  // 移除上一个点的样式
+                window.chartIndex = i;
+                ClassUtil.addClass($('.circles-container li')[window.chartIndex], 'li-active')  // 增加这个点的样式
+                window.charts.clear();
+                chatsDisplay(window.chartIndex);
             }
-        },
-
-        series: [
-            {
-                name: '出租车载客率统计',
-                type: 'pie',
-                radius: '75%',
-                data: fullRateDates,
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'inside',
-                        formatter:  '{b}: {c}\n({d}%)',
-                        textStyle: {
-                            fontWeight: 300,
-                            fontSize: 13
-                        }
-                    }
-                },
-                
-                itemStyle: {
-                    normal: {
-                        label: {
-                            show: true,
-                            textStyle: {
-                                fontWeight: 200,
-                                fontSize: 10
-                            },
-                            formatter: 100
-                        }
-                    },
-                    labelLine: {    //指示线状态
-                    show: true,
-                    smooth: 0.2,
-                    length: 10,
-                    length2: 20
-                }
-                },
-            }
-        ],
-        color: ['rgb(33,214,124)', 'rgb(222, 81, 69, .8)']
-    };
-
-    flowOption = {
-        title: {
-            text: '点击标签次数',//图标标题
-            x: 'center'//水平居中
-        },
-
-        xAxis: [  //x坐标轴信息    
-            {
-               name : '（下方x轴数据单位）',//坐标单位
-               data: ['2月', '4月', '6月', '8月', '10月', '12月']//坐标上数值
-            }
-        ],
-        yAxis: [//y坐标轴信息
-            {
-                name : '（y轴数据单位）',//坐标单位
-                type: 'value',
-                min:0,//坐标起始值
-                max:60  //坐标最大值
-            }
-        ],
-
+        })(i)
     }
 
 
     /**
      * 
      * @param {object} chartObject 图标数据的对象
-     * @param {*} charData 图标数据
+     * @param {*} chartData 图标数据
      */
-    function chatsDisplay(chartObject, charData) {
-        window.charts = echarts.init($('#show-area')[0]);
-        fullRateDates = charData;
-        console.log(chartObject)
-        window.charts.setOption(chartObject);
+    function chatsDisplay(index) {
+        /* 当这个值没有传回或者不存在的时候 */
+        if (datasArr[index] == null) {
+            window.charts.showLoading();
+            return;
+        }
+        // console.log(optionArr[index])
+        window.charts.hideLoading();
+        switch(index) {
+            case 0: {
+                window.charts.setOption(flowOption);
+                break;
+            }
+            case 1: {
+                window.charts.setOption(fullRateOption);
+                break;
+            }
+            case 2: {
+                window.charts.setOption(crowdOption);
+                break;
+            }
+        }
+        
     }
-    chatsDisplay(fullRateOption, jsonObj);
+    /* 当刚好 */
+    if (number == window.chartIndex) {
+        chatsDisplay(window.chartIndex);
+    }
 
+    // 添加事件监听
+    // EventUtil.addHandler($('.display-data')[0], 'click', dataShowContainerClickListen);
+    $('.display-data')[0].onclick = dataShowContainerClickListen;  // 不用addListener的好处
 }
 
-// function showDataArea() {
-//     $('.panel-right-container').css('z-index', 13);
-//     $('.display-data').css('z-index', 13);
-//     $('.display-data').css('display', 'block');
-//     showCharts([{
-//         value: 140,
-//         name: '利用'
-//     },
-//     {
-//         value: 140,
-//         name: '未利用'
-//     }]);
-// }
+/**
+ * @version 1.0
+ * @description 显示数据展示表
+ */
+function showDataArea() {
+    $('.panel-right-container').css('z-index', 13);
+    $('.display-data').css('z-index', 13);
+    $('.display-data').css('display', 'block');
+    showCharts(0);
+    // setTimeout(function() {
+    //     window.fullRateDates = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
+    //     showCharts(1);
+    // }, 2000);
+    // setTimeout(function() {
+    //     window.flowDatas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
+    //     showCharts(0);
+    // }, 4000);
+    flowChangeRequest();
+}
 
 
 // EventUtil.addHandler(document, 'click', function() {
 //     showDataArea();
+//     EventUtil.removeHandler(document, 'click', arguments.callee)
 // })
+
+/**
+ * @description 显示提示
+ * @param {String} text 文本内容
+ * @param {String} mode 1:横向提示/2:纵向提示
+ * @param {object} tipTarget 鼠标悬浮时候的事件对当前对象
+ */
+function showTips(text, mode, tipTarget) {
+    var tips = null;
+    if (mode == '1') {
+        tips = $('.transverse-tips')[0];
+        tips.style.left = tipTarget.offsetLeft - parseInt($(tips).css('width')) + 'px';
+        tips.style.top = tipTarget.offsetTop + (tipTarget.clientHeight - parseInt($(tips).css('height'))) / 2 + 'px';
+        $('.transverse-tips').css('display', 'block');
+        $('.transverse-tips div')[0].innerText = text;
+    } else {
+        tips = $('.portrait-tips')[0];
+        tips.style.left = $(tipTarget).offset().left + (tipTarget.clientWidth - parseInt($(tips).css('width'))) / 2 + 'px';
+        tips.style.top = $(tipTarget).offset().top +  tipTarget.clientHeight + 'px';
+        $('.portrait-tips').css('display', 'block');
+        $('.portrait-tips div')[0].innerText = text;
+    }
+}
+
+/**
+ * @description 隐藏提示
+ */
+function hiddenTips() {
+    $('.transverse-tips').css('display', 'none');
+    $('.portrait-tips').css('display', 'none');
+}
+
+/**
+ * @description 对所有的标签的提示进行监听
+ * @param {object} event 事件监听对象
+ */
+function mouseTipListen(event) {
+    // hiddenTips();
+    switch(event.target) {
+        case $('.time-mode-switch-container .switch-mode img')[0]: {
+            showTips('时间模式', '1', $(event.target).parents('li')[0])
+            break;
+        }
+
+        case $('.location-button img')[0]: {
+            showTips('定位', '1', $(event.target).parents('li')[0]);
+            break;
+        }
+
+        case $('.map-mode-switch-container .switch-mode img')[0]: {
+            showTips('地图类型', '1', $(event.target).parents('li')[0]);
+            break;
+        }
+
+        case $('.date-switch-container .switch-mode img')[0]: {
+            showTips('时间段', '1', $('.date-switch-container')[0]);
+            break;
+        }
+
+        case $('.predict-date-switch-container .switch-mode img')[0]: {
+            showTips('预测时间', '1', $('.predict-date-switch-container')[0]);
+            break;
+        }
+
+        case $('#start-date')[0]: {
+            showTips('起始日期', '2', $('#start-date')[0]);
+            break;
+        }
+
+        case $('#start-time')[0]: {
+            showTips('起始时间', '2', $('#start-time')[0]);
+            break;
+        }
+
+        case $('#end-date')[0]: {
+            showTips('终止日期', '2', $('#end-date')[0]);
+            break;
+        }
+
+        case $('#end-time')[0]: {
+            showTips('终止时间', '2', $('#end-time')[0]);
+            break;
+        }
+
+        case $('#predict-date')[0]: {
+            showTips('预测日期', '2', $('#predict-date')[0]);
+            break;
+        }
+
+        case $('#predict-time')[0]: {
+            showTips('预测时间', '2', $('#predict-time')[0]);
+            break;
+        }
+
+        case $('.predict-data-mode')[0]: {
+            showTips('显示类型', '2', $('.predict-data-mode')[0]);
+            break;
+        }
+
+        case $('#normal-map')[0]: {
+            showTips('普通地图', '2', $('#normal-map')[0]);
+            break;
+        }
+
+        case $('#heat-map')[0]: {
+            showTips('热力图', '2', $('#heat-map')[0]);
+            break;
+        }
+
+        case $('#past-tense')[0]: {
+            showTips('查看过去', '2', $('#past-tense')[0]);
+            break;
+        }
+
+        case $('#future-tense')[0]: {
+            showTips('预测未来', '2', $('#future-tense')[0]);
+            break;
+        }
+    }
+}
+/* 监听标签的显示与隐藏 */
+EventUtil.addHandler(document, 'mouseover', mouseTipListen);
+EventUtil.addHandler($('#map-container')[0], 'mouseover', function() {
+    hiddenTips();
+})
+
 
 /**
  * @description 对查询的时间进行限制
@@ -913,6 +1210,7 @@ function checkMaxTime(minutes) {
      * @param {object} event 事件对象
      */
     function dateContainerListen(event) {
+        hiddenTips();
         switch(event.target) {
             case $('.date-switch-container .date-container div div')[0]: {
                 showList($('.start-date-list')[0]);
@@ -1639,8 +1937,6 @@ function predictDemandedRequest() {
     jsonObj.rightBottomLat = rightBottom.getLat();
     jsonObj.predictedTime = date.replace(/\//g, '-') + ' ' + time + ':00';
 
-    console.log('车辆需求量')
-    console.log(jsonObj);
 
     $.ajax({
         url: 'http://'+ window.ip +':8080/qgtaxi/maps/demanded',
@@ -1682,6 +1978,170 @@ function predictDemandedRequest() {
     });
 }
 
+/**
+ * @version 1.0
+ * @description 流量改变统计请求函数
+ */
+function flowChangeRequest() {
+    var jsonObj = {},
+    container = $('#map-container')[0],
+    leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
+    rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
+
+    jsonObj.leftTopLon = leftTop.getLng();
+    jsonObj.leftTopLat = leftTop.getLat();
+    jsonObj.rightBottomLon = rightBottom.getLng();
+    jsonObj.rightBottomLat = rightBottom.getLat();
+    jsonObj.currentTime = getCurrentTime();
+    console.log(jsonObj.currentTime)
+    $.ajax({
+        url: 'http://'+ window.ip +':8080/qgtaxi/charts/changepercent',
+        type: 'post',
+        data: JSON.stringify(jsonObj),
+        dataType: 'json',
+        processData: false,
+        contentType: 'application/json',
+        success: function(responseObj) {
+            switch(responseObj.status) {
+                case '2000': {
+                    window.flowDatas = responseObj.percent;
+                    showCharts(0)   // 显示流量变化率的图
+                    utilizationRateRequest();
+                    break;
+                }
+
+                case '5000': {
+                    // 服务器内部错误
+                    showError('服务器内部错误');
+                    break;
+                }
+
+                case '5001': {
+                    // 数据缺失
+                    showError('此区域无数据');
+                    break;
+                }
+
+                case '5002': {
+                    showError('前端数据格式出错');
+                    break;
+                }
+            }
+            
+        },
+        error: function() {
+            // 请求失败时要干什么
+            showError('请求失败');
+        }
+    });
+}
+
+function utilizationRateRequest() {
+    var jsonObj = {},
+    container = $('#map-container')[0],
+    leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
+    rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
+
+    jsonObj.leftTopLon = leftTop.getLng();
+    jsonObj.leftTopLat = leftTop.getLat();
+    jsonObj.rightBottomLon = rightBottom.getLng();
+    jsonObj.rightBottomLat = rightBottom.getLat();
+    jsonObj.currentTime = getCurrentTime();
+
+    $.ajax({
+        url: 'http://'+ window.ip +':8080/qgtaxi/charts/utilizepercent',
+        type: 'post',
+        data: JSON.stringify(jsonObj),
+        dataType: 'json',
+        processData: false,
+        contentType: 'application/json',
+        success: function(responseObj) {
+            switch(responseObj.status) {
+                case '2000': {
+                    window.fullRateDates = responseObj.percent;
+                    showCharts(1)   // 显示流量变化图
+                    break;
+                }
+
+                case '5000': {
+                    // 服务器内部错误
+                    showError('服务器内部错误');
+                    break;
+                }
+
+                case '5001': {
+                    // 数据缺失
+                    showError('此区域无数据');
+                    break;
+                }
+
+                case '5002': {
+                    showError('前端数据格式出错');
+                    break;
+                }
+            }
+            
+        },
+        error: function() {
+            // 请求失败时要干什么
+            showError('请求失败');
+        }
+    });
+}
+
+function crowdRequest() {
+    var jsonObj = {},
+    container = $('#map-container')[0],
+    leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
+    rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
+
+    jsonObj.leftTopLon = leftTop.getLng();
+    jsonObj.leftTopLat = leftTop.getLat();
+    jsonObj.rightBottomLon = rightBottom.getLng();
+    jsonObj.rightBottomLat = rightBottom.getLat();
+    jsonObj.currentTime = getCurrentTime();
+
+    $.ajax({
+        url: 'http://'+ window.ip +':8080/qgtaxi/charts/utilizepercent',
+        type: 'post',
+        data: JSON.stringify(jsonObj),
+        dataType: 'json',
+        processData: false,
+        contentType: 'application/json',
+        success: function(responseObj) {
+            switch(responseObj.status) {
+                case '2000': {
+                    window.crowdDatas = responseObj.percent;
+                    // 执行调用函数
+                    showCharts(2)  // 显示拥挤率的图
+                    break;
+                }
+
+                case '5000': {
+                    // 服务器内部错误
+                    showError('服务器内部错误');
+                    break;
+                }
+
+                case '5001': {
+                    // 数据缺失
+                    showError('此区域无数据');
+                    break;
+                }
+
+                case '5002': {
+                    showError('前端数据格式出错');
+                    break;
+                }
+            }
+            
+        },
+        error: function() {
+            // 请求失败时要干什么
+            showError('请求失败');
+        }
+    });
+}
 
 /**
  * @version 1.0
