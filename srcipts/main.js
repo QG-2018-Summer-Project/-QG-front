@@ -46,13 +46,18 @@ function activeHotSpot() {
         citylimit: true,
         autoFitView: true
     });
+    // map.count = 0;
     var clickEventListener = map.on('hotspotclick', function(e) {
         console.log('定位成功:' + '[' + e.lnglat.getLng() + ',' + e.lnglat.getLat() + ']');
         map.setZoomAndCenter(15, [e.lnglat.getLng(), e.lnglat.getLat()]);
-        
+    
         placeSearch.getDetails(e.id, function(status, result) {
+            
             console.log(result);
             if (status === 'complete' && result.info === 'OK') {
+                
+                // map.count++;
+               
                 //开启信息窗口
                 var poiInfo = result.poiList.pois[0];           
                 showInfoWindow(poiInfo.name, poiInfo.location);               
@@ -109,12 +114,6 @@ function clearInput() {
  * @param {object} location 
  */
 function showInfoWindow(content, location) {
-    // 避免重复点击重复打开窗口
-    if (map.hasOwnProperty('infoWindow')) {
-        if (map.infoWindow.getIsOpen()) {
-            return;
-        }
-    }
     
     var infoWindow = new AMap.InfoWindow({
         isCustom: true,  //使用自定义窗体
@@ -128,7 +127,9 @@ function showInfoWindow(content, location) {
 
 
     map.infoWindow = infoWindow;
+
     infoWindow.open(map, location);
+    
     addInfoEvent(location, content);    
 }
 
@@ -138,14 +139,20 @@ function showInfoWindow(content, location) {
  * @param {string} content
  */
 function addInfoEvent(location, content) {
+    
+    
+    EventUtil.addHandler($('.amap-overlays')[0], 'click', infoWindowListener);
+    
+
     function infoWindowListener(event) {
+        // 事件冒泡,this指向的是父元素
         switch(event.target) {
             case $('.amap-overlays button')[0]: {
                 selectMarker(); 
-                console.log(1);
                 EventUtil.removeHandler(this, 'click', infoWindowListener);
                 break;
             } case $('.amap-overlays button')[1]: {
+                console.log(event.target);
                 selectMarker(0, location);
                 setStartContent(content);
                 EventUtil.removeHandler(this, 'click', infoWindowListener);             
@@ -156,11 +163,8 @@ function addInfoEvent(location, content) {
                 EventUtil.removeHandler(this, 'click', infoWindowListener);
                 break;
             } 
-            
         }
     }
-    EventUtil.addHandler($('.amap-overlays')[0], 'click', infoWindowListener);
-    
     function selectMarker(type, location) {
         switch(type) {
             case 0: { //设置为起点
