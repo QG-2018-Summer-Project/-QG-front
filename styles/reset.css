@@ -186,3 +186,9 @@ button {
     margin-top: -14px;
     text-align: center;
 }
+
+/* 选择某条路时，对应的route-li高亮 */
+
+.route-highlight {
+    background-color: #bfffdf !important;
+}
