@@ -457,7 +457,6 @@ function pluginOptions() {
     })();
 })();
     
-
 /**
  * @author zwb
  * @description 将所做的js包在整个函数内部，避免用完后变量成为全局变量。
@@ -855,9 +854,6 @@ function showCharts(number) {
             case $('#close-show')[0]: {
                 $('.panel-right-container').css('z-index', '0');
                 EventUtil.removeHandler($('.display-data')[0], 'click', dataShowContainerClickListen);  // 移除事件监听
-                window.flowDatas = null;
-                window.fullRateDates = null;
-                window.crowdDatas = null;
                 break;
             }
 
@@ -868,7 +864,6 @@ function showCharts(number) {
                     window.chartIndex = 3;
                 }
                 window.chartIndex--;
-                console.log(window.chartIndex)
                 ClassUtil.addClass($('.circles-container li')[window.chartIndex], 'li-active')  // 增加这个点的样式
                 window.charts.clear();
                 chatsDisplay(window.chartIndex);
@@ -944,6 +939,10 @@ function showCharts(number) {
  * @description 显示数据展示表
  */
 function showDataArea() {
+    // 首先将数据清除掉
+    window.flowDatas = null;
+    window.fullRateDates = null;
+    window.crowdDatas = null;
     $('.panel-right-container').css('z-index', 13);
     $('.display-data').css('z-index', 13);
     $('.display-data').css('display', 'block');
@@ -1089,7 +1088,6 @@ EventUtil.addHandler(document, 'mouseover', mouseTipListen);
 EventUtil.addHandler($('#map-container')[0], 'mouseover', function() {
     hiddenTips();
 })
-
 
 /**
  * @description 对查询的时间进行限制
@@ -1679,6 +1677,7 @@ function realTimeHeatmapRequestTrigger() {
  */
 function showError(text) {
     $('.float-layer').css('display', 'block');
+    $('.request-loading-container').css('display', 'none');
     $('.float-layer span')[0].innerText = text;
     setTimeout(function() {
         /* 显示浮出层 */
@@ -1697,6 +1696,51 @@ function showError(text) {
         EventUtil.removeHandler($('.float-layer button')[0], 'click', certainClick);  // 确认按钮的事件移除
     }
     EventUtil.addHandler($('.float-layer button')[0], 'click', certainClick);   // 确认按钮的事件添加
+}
+
+/**
+ * @description 在后台进行计算的时候，进行加载动画并且不让用户随意点击
+ */
+function showRequestLoading() {
+    $('.float-layer').css('display', 'block');
+    $('.request-loading-container').css('display', 'block');
+    setTimeout(function() {
+        /* 显示浮出层 */
+        if (ClassUtil.hasClass($('.request-loading-container')[0], 'down-list-transform') == false) {
+            ClassUtil.addClass($('.request-loading-container')[0], 'down-list-transform');
+        }
+    }, 20);
+    /* 6秒没有反应的话，将这个浮出层取消 */
+    setTimeout(function() {
+        if (ClassUtil.hasClass($('.request-loading-container')[0], 'down-list-transform') == true) {
+            ClassUtil.removeClass($('.request-loading-container')[0], 'down-list-transform');
+        }
+        setTimeout(function() {
+            $('.float-layer').css('display', 'none');
+        }, 300);
+    }, 6000);
+
+    (function() {
+        var index = 0;
+        function animate(number) {
+            $('.request-loading-animate li:eq('+ number +')').animate({
+                height : '60px'
+            }, 650).animate({
+                height : '30px'
+            }, 650, function() {
+                animate(number)
+            })
+        }
+        function triggle() {
+            if (index == 5) {
+                return;
+            }
+            animate(index);
+            index++;       
+            setTimeout(triggle, 250);
+        }
+        triggle();
+    })();
 }
 
 /**
@@ -1731,6 +1775,8 @@ function realTimeHeatmapRequest() {
         leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
         rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
         
+    showRequestLoading();   // 执行动画，避免多次请求
+
     jsonObj.leftTopLon = leftTop.getLng();
     jsonObj.leftTopLat = leftTop.getLat();
     jsonObj.rightBottomLon = rightBottom.getLng();
@@ -1798,6 +1844,8 @@ function timeQuantumHeatmapRequest() {
         return;
     }
 
+    showRequestLoading();   // 执行动画，避免多次请求
+
     jsonObj.leftTopLon = leftTop.getLng();
     jsonObj.leftTopLat = leftTop.getLat();
     jsonObj.rightBottomLon = rightBottom.getLng();
@@ -1862,6 +1910,8 @@ function predictCountRequest() {
         showError('请输入想要预测的日期');
         return;
     }
+
+    showRequestLoading();   // 执行动画，避免多次请求
 
     jsonObj.leftTopLon = leftTop.getLng();
     jsonObj.leftTopLat = leftTop.getLat();
@@ -1930,6 +1980,8 @@ function predictDemandedRequest() {
         showError('请输入想要预测的日期');
         return;
     }
+
+    showRequestLoading();   // 执行动画，避免多次请求
 
     jsonObj.leftTopLon = leftTop.getLng();
     jsonObj.leftTopLat = leftTop.getLat();
@@ -2169,6 +2221,7 @@ function heatmapDisplay(jsonObj) {
         data: list,
         // max: maxWeight
     });
+    $('.float-layer').css('display', 'none');  // 取消加载动画
 }
 
 

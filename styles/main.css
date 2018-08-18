@@ -873,6 +873,36 @@ button {
     top: 8.5px;
     z-index: 12;
 }
+.request-loading-container {
+    display: none;
+    width: 400px;
+    height: 224px;
+    overflow: hidden;
+}
+.request-loading-container>img {
+    display: block;
+    width: 200px;
+    height: 100px;
+    margin: 15px auto;
+}
+.request-loading-animate {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 60px;
+    margin: 10px auto;
+}
+.request-loading-animate li {
+    display: block;
+    list-style: none;
+    float: left;
+    margin-left: 5px;
+    width: 5px;
+    height: 30px;
+    background-color: aquamarine;
+}
 /* 日期控件
 .date-container {
     height: 100px;
