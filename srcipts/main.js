@@ -666,65 +666,13 @@ function showCharts(number) {
     var currentHours = (new Date()).getHours(),
         xAxisArr = [],
         i,
+        maxPercent = 100,
         // chartIndex = number || 0,
         datasArr = [window.flowDatas, window.fullRateDates, window.crowdDatas];
         window.charts = echarts.init($('#show-area')[0]);
     for (i = -3; i < 3; i++) {
         xAxisArr.push((currentHours + i) < 0? (currentHours + i) + 24 + '时': (currentHours + i) + '时');
     }
-
-    // var fullRateOption = {
-    //     title : {
-    //         show: true,
-    //         text : '出租车的载客率统计',
-    //         x: 'center',
-    //         y: '10px',
-    //         textStyle: {
-    //             fontSize: 15,
-    //             fontWeight:600
-    //         }
-    //     },
-
-    //     series: [
-    //         {
-    //             name: '出租车载客率统计',
-    //             type: 'pie',
-    //             radius: '75%',
-    //             data: fullRateDates,
-    //             label: {
-    //                 normal: {
-    //                     show: true,
-    //                     position: 'inside',
-    //                     formatter:  '{b}: {c}\n({d}%)',
-    //                     textStyle: {
-    //                         fontWeight: 300,
-    //                         fontSize: 13
-    //                     }
-    //                 }
-    //             },
-                
-    //             itemStyle: {
-    //                 normal: {
-    //                     label: {
-    //                         show: true,
-    //                         textStyle: {
-    //                             fontWeight: 200,
-    //                             fontSize: 10
-    //                         },
-    //                         formatter: 100
-    //                     }
-    //                 },
-    //                 labelLine: {    //指示线状态
-    //                 show: true,
-    //                 smooth: 0.2,
-    //                 length: 10,
-    //                 length2: 20
-    //             }
-    //             },
-    //         }
-    //     ],
-    //     color: ['rgb(33,214,124)', 'rgb(222, 81, 69, .8)']
-    // };
 
     /* 车流量变化率折线图配置 */
     var flowOption = {
@@ -756,7 +704,7 @@ function showCharts(number) {
                 name : '/%',//坐标单位
                 type: 'value',
                 min:0,//坐标起始值
-                max:1  //坐标最大值
+                max:100  //坐标最大值
             }
         ],
         series: [
@@ -817,7 +765,7 @@ function showCharts(number) {
                 name: '/%',//坐标单位
                 type: 'value',
                 min: 0,//坐标起始值
-                max: 1  //坐标最大值
+                max: 100  //坐标最大值
             }
         ],
 
@@ -841,7 +789,59 @@ function showCharts(number) {
     }
 
     /* 拥挤率柱状图配置 */
-    var crowdOption = {}
+    var crowdOption = {
+        title: {
+            text: '拥挤变化率',//图标标题
+            x: 'center'//水平居中
+        },
+        tooltip: {//提示框信息
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        legend: {//图例信息
+            data:[ 'A'],
+            top:40//图例位置（可设置top,bottom,left,right）
+        },
+        grid: {//图的位置
+            top: 80,
+            // bottom: 100
+        },
+        xAxis: [  //x坐标轴信息    
+            {
+            name : '/h',  //坐标单位
+            data: xAxisArr  //坐标上数值
+            }
+        ],
+        yAxis: [//y坐标轴信息
+            {
+                name : '/%',//坐标单位
+                type: 'value',
+                min:0,//坐标起始值
+                max:100  //坐标最大值
+            }
+        ],
+        series: [
+            {//A曲线
+                name:'A',
+                type:'line',
+                itemStyle:{ 
+                    normal:{ color: "#d14a61" } //坐标圆点的颜色
+                }, 
+                lineStyle:{ 
+                    normal:{ width:4,color: "#d14a61"  }//线条的颜色及宽度
+                },
+                label: {//线条上的数字提示信息
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                smooth: true,//线条平滑
+                data: window.crowdDatas
+            }
+        ]
+    };
 
     /**
      * @version 1.0
@@ -853,6 +853,9 @@ function showCharts(number) {
             /* 关闭数据展示层 */
             case $('#close-show')[0]: {
                 $('.panel-right-container').css('z-index', '0');
+                if (ClassUtil.hasClass($('.nav-1')[0], 'show-nav-animatiton') == true) {
+                    ClassUtil.removeClass($('.nav-1')[0], 'show-nav-animatiton')
+                }
                 EventUtil.removeHandler($('.display-data')[0], 'click', dataShowContainerClickListen);  // 移除事件监听
                 break;
             }
@@ -882,6 +885,8 @@ function showCharts(number) {
         }
     }
 
+
+    /* 一下循环是赋值切换图表进行的 */
     for (i = 0; i < 3; i++) {
         (function(i) {
             $('.circles-container li')[i].onclick = function() {
@@ -891,7 +896,16 @@ function showCharts(number) {
                 window.charts.clear();
                 chatsDisplay(window.chartIndex);
             }
-        })(i)
+        })(i);
+        (function(i) {
+            $('.nav-1 .nav-2-container .nav-2-ul li')[i].onclick = function() {
+                ClassUtil.removeClass($('.circles-container li')[window.chartIndex], 'li-active')  // 移除上一个点的样式
+                window.chartIndex = i;
+                ClassUtil.addClass($('.circles-container li')[window.chartIndex], 'li-active')  // 增加这个点的样式
+                window.charts.clear();
+                chatsDisplay(window.chartIndex);
+            }
+        })(i);
     }
 
 
@@ -901,6 +915,7 @@ function showCharts(number) {
      * @param {*} chartData 图标数据
      */
     function chatsDisplay(index) {
+        console.log(index);
         /* 当这个值没有传回或者不存在的时候 */
         if (datasArr[index] == null) {
             window.charts.showLoading();
@@ -910,15 +925,39 @@ function showCharts(number) {
         window.charts.hideLoading();
         switch(index) {
             case 0: {
+                for (i = 0; i < 6; i++) {
+                    if (maxPercent < window.flowDatas[i]) {
+                        maxPercent = window.flowDatas[i];
+                    }
+                }
+                maxPercent = Math.ceil(maxPercent / 100) * 100;
+                flowOption.yAxis[0].max = maxPercent;
                 window.charts.setOption(flowOption);
+                maxPercent = 100;   // 恢复为100，避免影响下一张图，因为一直会存在这个函数，这个值必须初始化才能再用
                 break;
             }
             case 1: {
+                for (i = 0; i < 6; i++) {
+                    if (maxPercent < window.fullRateDates[i]) {
+                        maxPercent = window.fullRateDates[i];
+                    }
+                }
+                maxPercent = Math.ceil(maxPercent / 100) * 100;
+                fullRateOption.yAxis[0].max = maxPercent;
                 window.charts.setOption(fullRateOption);
+                maxPercent = 100;// 恢复为100，避免影响下一张图，因为一直会存在这个函数，这个值必须初始化才能再用
                 break;
             }
             case 2: {
+                for (i = 0; i < 6; i++) {
+                    if (maxPercent < window.crowdDatas[i]) {
+                        maxPercent = window.crowdDatas[i];
+                    }
+                }
+                maxPercent = Math.ceil(maxPercent / 100) * 100;
+                crowdOption.yAxis[0].max = maxPercent;
                 window.charts.setOption(crowdOption);
+                maxPercent = 100;   // 恢复为100，避免影响下一张图，因为一直会存在这个函数，这个值必须初始化才能再用
                 break;
             }
         }
@@ -943,26 +982,23 @@ function showDataArea() {
     window.flowDatas = null;
     window.fullRateDates = null;
     window.crowdDatas = null;
+
     $('.panel-right-container').css('z-index', 13);
     $('.display-data').css('z-index', 13);
     $('.display-data').css('display', 'block');
     showCharts(0);
-    // setTimeout(function() {
-    //     window.fullRateDates = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
-    //     showCharts(1);
-    // }, 2000);
-    // setTimeout(function() {
-    //     window.flowDatas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
-    //     showCharts(0);
-    // }, 4000);
     flowChangeRequest();
 }
 
+EventUtil.addHandler($('.nav-1 .show-nav-button')[0], 'click', function() {
+    if (ClassUtil.hasClass($('.nav-1')[0], 'show-nav-animatiton') == false) {
+        $('.panel-right-container').css('z-index', '0');
+    } else {
+        showDataArea()
+    }
+    // showCharts(0);
+})
 
-// EventUtil.addHandler(document, 'click', function() {
-//     showDataArea();
-//     EventUtil.removeHandler(document, 'click', arguments.callee)
-// })
 
 /**
  * @description 显示提示
@@ -1158,6 +1194,10 @@ function checkMaxTime(minutes) {
             month = dateString.split('/')[1],
             maxDate,
             currentDate = new Date();
+        
+        if (isNaN(year) == true) {
+            year = '----'
+        }
 
         $('.'+ containerClassName +' .choice-date-container')[0].innerHTML = '';  // 日期片段初始化
         $('.'+ containerClassName +' .year-select-switch span')[0].innerText = year + '年';
@@ -1183,7 +1223,17 @@ function checkMaxTime(minutes) {
         }
         $('.'+ containerClassName +' .choice-date-container li:eq('+ (dateNumber-1) +')').attr('class', 'date-choiced');  // 初始化已经选择的日期
 
-        // 当没有选择日期的时候，不进行更新日期选择区域
+        /* 当这个更新区域是预测未来的时候，要往后延续一天 */
+        if (containerClassName == 'predict-date-list' && 
+            parseInt($('.'+ containerClassName +' .year-select-switch span')[0].innerText) == currentDate.getFullYear() && 
+            parseInt($('.'+ containerClassName +' .month-select-switch span')[0].innerText) == (currentDate.getMonth() + 1) ) {
+            /* 当日期数大于当前月最大日期数的时候 */
+            // 代码----暂时不写了
+            $('.'+ containerClassName +' .choice-date-container')[0].innerHTML += '<li>'+ (maxDate + 1) +'</li>';
+            // $('.'+ containerClassName +' .choice-date-container')[0].innerHTML += '<li>'+ (maxDate + 2) +'</li>';
+        }
+
+        // 当之前没有选择过日期，不对已经选择的日期进行标注的时候，不进行更新日期选择区域
         if (typeof dateString.split('/')[2] == 'undefined' || dateString.split('/')[2] == '--' || dateString.split('/')[2] == 'undefined') {
             return;
         }
@@ -1242,6 +1292,7 @@ function checkMaxTime(minutes) {
                 }
                 clearTimeout(window.realHeatmapTimeoutID);   // 当为时间段请求的时候，停止实时更新
                 timeQuantumHeatmapRequest();                // 请求时间段的热力图
+                console.log('发送时间段请求')
                 break;
             }
 
@@ -1342,7 +1393,7 @@ function checkMaxTime(minutes) {
             text = text < 10? '0' + text : text;
             if ($(event.target).parent('ul').attr('class') == 'hours-select-list') {
                 $(event.target).parents('.time-switch-container')[0].getElementsByTagName('span')[0].innerText = text + '时';
-                $(event.target).parents('.time-switch-container')[0].getElementsByTagName('span')[1].innerText = '0分';
+                $(event.target).parents('.time-switch-container')[0].getElementsByTagName('span')[1].innerText = '00分';
             } else {
                 $(event.target).parents('.time-switch-container')[0].getElementsByTagName('span')[1].innerText = text + '分';
             }
@@ -1711,14 +1762,14 @@ function showRequestLoading() {
         }
     }, 20);
     /* 6秒没有反应的话，将这个浮出层取消 */
-    setTimeout(function() {
-        if (ClassUtil.hasClass($('.request-loading-container')[0], 'down-list-transform') == true) {
-            ClassUtil.removeClass($('.request-loading-container')[0], 'down-list-transform');
-        }
-        setTimeout(function() {
-            $('.float-layer').css('display', 'none');
-        }, 300);
-    }, 6000);
+    // setTimeout(function() {
+    //     if (ClassUtil.hasClass($('.request-loading-container')[0], 'down-list-transform') == true) {
+    //         ClassUtil.removeClass($('.request-loading-container')[0], 'down-list-transform');
+    //     }
+    //     setTimeout(function() {
+    //         $('.float-layer').css('display', 'none');
+    //     }, 300);
+    // }, 30000);
 
     (function() {
         var index = 0;
@@ -1748,21 +1799,21 @@ function showRequestLoading() {
  * @description 对预测未来的时间进行校测
  * @param {Number} minutes 最大的时间跨度（分钟）
  */
-function checkPredictTime(minutes) {
-    var predictTime = $('#predict-date span')[0].innerText + ' ' + $('#predict-time span')[0].innerText,
-        currentTime = getCurrentTime(),
-        start = new Date(currentTime),
-        end = new Date(predictTime);
+// function checkPredictTime(minutes) {
+//     var predictTime = $('#predict-date span')[0].innerText + ' ' + $('#predict-time span')[0].innerText,
+//         currentTime = getCurrentTime(),
+//         start = new Date(currentTime),
+//         end = new Date(predictTime);
     
-    if (predictTime.slice(0, 1) == '-' || currentTime.slice(0, 1) == '-') {
-        return false;
-    }
-    /* 检查是否超过限制时间 */
-    if ((parseInt(end - start) / 60000) > minutes) {
-        return false;
-    }
-    return true;
-}
+//     if (predictTime.slice(0, 1) == '-' || currentTime.slice(0, 1) == '-') {
+//         return false;
+//     }
+//     /* 检查是否超过限制时间 */
+//     if ((parseInt(end - start) / 60000) > minutes) {
+//         return false;
+//     }
+//     return true;
+// }
 
 
 /**
@@ -1774,15 +1825,13 @@ function realTimeHeatmapRequest() {
         container = $('#map-container')[0],
         leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
         rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
-        
-    showRequestLoading();   // 执行动画，避免多次请求
 
     jsonObj.leftTopLon = leftTop.getLng();
     jsonObj.leftTopLat = leftTop.getLat();
     jsonObj.rightBottomLon = rightBottom.getLng();
     jsonObj.rightBottomLat = rightBottom.getLat();
     jsonObj.currentTime = getCurrentTime();
-    
+
     $.ajax({
         url: 'http://'+ window.ip +':8080/qgtaxi/maps/liveheatmap',
         type: 'post',
@@ -1800,25 +1849,29 @@ function realTimeHeatmapRequest() {
                 case '5000': {
                     // 服务器发生未知错误
                     showError('服务器发生未知错误');
+                    clearTimeout(window.realHeatmapTimeoutID)  // 不再请求
                     break;
                 }
 
                 case '5001': {
                     // 预测数据缺失
-                    showError('数据缺失');
+                    showError('该地区无数据');
+                    clearTimeout(window.realHeatmapTimeoutID)  // 不再请求
                     break;
                 }
 
                 case '5002': {
                     // 前端数据格式出错
                     showError('前端数据格式出错');
+                    clearTimeout(window.realHeatmapTimeoutID)  // 不再请求
                     break;
                 }
             }
         },
         error: function() {
             // 请求失败
-            showError('请求失败');
+            showError('请求实时更新失败');
+            clearTimeout(window.realHeatmapTimeoutID)  // 不再请求
         }
     });
 }
@@ -1844,14 +1897,20 @@ function timeQuantumHeatmapRequest() {
         return;
     }
 
-    showRequestLoading();   // 执行动画，避免多次请求
+    if (($('#start-date span')[0].innerText + ' ' + $('#start-time span')[0].innerText) < '2018/08/17 00:00') {
+        showError('起始时间过早，查询不到数据');
+        return;
+    }
 
     jsonObj.leftTopLon = leftTop.getLng();
     jsonObj.leftTopLat = leftTop.getLat();
     jsonObj.rightBottomLon = rightBottom.getLng();
     jsonObj.rightBottomLat = rightBottom.getLat();
-    jsonObj.startTime = $('#start-date span')[0].innerText.replace(/\//g, '-') + ' ' + $('#start-time span')[0].innerText + ':00';
-    jsonObj.endTime = $('#end-date span')[0].innerText.replace(/\//g, '-') + ' ' + $('#end-time span')[0].innerText + ':00';
+    jsonObj.startTime = dealTimeQuan($('#start-date span')[0].innerText, $('#start-time span')[0].innerText)
+    jsonObj.endTime = dealTimeQuan($('#end-date span')[0].innerText, $('#end-time span')[0].innerText);
+
+    showRequestLoading();   // 执行动画，避免多次请求
+    console.log('时间段请求已经发送')
     $.ajax({
         url: 'http://'+ window.ip +':8080/qgtaxi/maps/querymap',
         type: 'post',
@@ -1888,7 +1947,7 @@ function timeQuantumHeatmapRequest() {
         },
         error: function() {
             // 请求失败时要干什么
-            showError('请求失败');
+            showError('请求按过去时间段查询失败');
         }
     });
 }
@@ -1917,7 +1976,8 @@ function predictCountRequest() {
     jsonObj.leftTopLat = leftTop.getLat();
     jsonObj.rightBottomLon = rightBottom.getLng();
     jsonObj.rightBottomLat = rightBottom.getLat();
-    jsonObj.predictedTime = date.replace(/\//g, '-') + ' ' + time + ':00';
+    jsonObj.predictedTime = dealTimeQuan(date, time);
+    // date.replace(/\//g, '-') + ' ' + time + ':00';
 
     console.log('车辆流量')
     console.log(jsonObj);
@@ -1958,7 +2018,7 @@ function predictCountRequest() {
         },
         error: function() {
             // 请求失败时要干什么
-            showError('请求失败');
+            showError('请求预测车流量失败');
         }
     });
 }
@@ -1987,7 +2047,8 @@ function predictDemandedRequest() {
     jsonObj.leftTopLat = leftTop.getLat();
     jsonObj.rightBottomLon = rightBottom.getLng();
     jsonObj.rightBottomLat = rightBottom.getLat();
-    jsonObj.predictedTime = date.replace(/\//g, '-') + ' ' + time + ':00';
+    jsonObj.predictedTime = dealTimeQuan(date, time)
+    // date.replace(/\//g, '-') + ' ' + time + ':00';
 
 
     $.ajax({
@@ -2025,7 +2086,7 @@ function predictDemandedRequest() {
         },
         error: function() {
             // 请求失败时要干什么
-            showError('请求失败');
+            showError('请求预测需求量失败');
         }
     });
 }
@@ -2036,6 +2097,7 @@ function predictDemandedRequest() {
  */
 function flowChangeRequest() {
     var jsonObj = {},
+    i,
     container = $('#map-container')[0],
     leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
     rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
@@ -2056,7 +2118,7 @@ function flowChangeRequest() {
         success: function(responseObj) {
             switch(responseObj.status) {
                 case '2000': {
-                    window.flowDatas = responseObj.percent;
+                    window.flowDatas = responseObj.percents;
                     showCharts(0)   // 显示流量变化率的图
                     utilizationRateRequest();
                     break;
@@ -2083,13 +2145,14 @@ function flowChangeRequest() {
         },
         error: function() {
             // 请求失败时要干什么
-            showError('请求失败');
+            showError('请求流量统计失败');
         }
     });
 }
 
 function utilizationRateRequest() {
     var jsonObj = {},
+    i,
     container = $('#map-container')[0],
     leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
     rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
@@ -2110,8 +2173,9 @@ function utilizationRateRequest() {
         success: function(responseObj) {
             switch(responseObj.status) {
                 case '2000': {
-                    window.fullRateDates = responseObj.percent;
+                    window.fullRateDates = responseObj.percents;
                     showCharts(1)   // 显示流量变化图
+                    crowdRequest();
                     break;
                 }
 
@@ -2136,13 +2200,14 @@ function utilizationRateRequest() {
         },
         error: function() {
             // 请求失败时要干什么
-            showError('请求失败');
+            showError('请求出租车利用率失败');
         }
     });
 }
 
 function crowdRequest() {
     var jsonObj = {},
+    i,
     container = $('#map-container')[0],
     leftTop = map.containTolnglat(new AMap.Pixel(0.000001, 0.000001)),   // 左上角坐标
     rightBottom = map.containTolnglat(new AMap.Pixel(container.clientWidth, container.clientHeight));    // 右下角坐标
@@ -2154,7 +2219,7 @@ function crowdRequest() {
     jsonObj.currentTime = getCurrentTime();
 
     $.ajax({
-        url: 'http://'+ window.ip +':8080/qgtaxi/charts/utilizepercent',
+        url: 'http://'+ window.ip +':8080/qgtaxi/charts/crowded',
         type: 'post',
         data: JSON.stringify(jsonObj),
         dataType: 'json',
@@ -2163,7 +2228,7 @@ function crowdRequest() {
         success: function(responseObj) {
             switch(responseObj.status) {
                 case '2000': {
-                    window.crowdDatas = responseObj.percent;
+                    window.crowdDatas = responseObj.percents;
                     // 执行调用函数
                     showCharts(2)  // 显示拥挤率的图
                     break;
@@ -2190,7 +2255,7 @@ function crowdRequest() {
         },
         error: function() {
             // 请求失败时要干什么
-            showError('请求失败');
+            showError('请求拥挤率统计失败');
         }
     });
 }
@@ -2216,10 +2281,10 @@ function heatmapDisplay(jsonObj) {
             count: pointSet[i].weight
         });
     }
-    // maxWeight = maxWeight * 0.6;
+    maxWeight = maxWeight * 0.5;
     heatmap.setDataSet({
         data: list,
-        // max: maxWeight
+        max: maxWeight
     });
     $('.float-layer').css('display', 'none');  // 取消加载动画
 }

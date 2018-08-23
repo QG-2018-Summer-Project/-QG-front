@@ -9,11 +9,27 @@ function getCurrentTime() {
     var time = new Date(),
         currentTime =  '2017-'
                     + '0' + (((time.getMonth() + 7) < 10 ? '0' + (time.getMonth() + 7) : (time.getMonth() + 7)) % 12) + '-'
-                    + ((time.getDate() - 10) < 10 ? '0' + (time.getDate() - 10) : (time.getDate() - 10)) + ' '
+                    + ((time.getDate() - 16) < 10 ? '0' + (time.getDate() - 16) : (time.getDate() - 16)) + ' '
                     + (time.getHours() < 0? '0' + time.getHours():time.getHours())
                     + ':' + (time.getMinutes() < 10? '0' + time.getMinutes(): time.getMinutes())
                     + ':' + (time.getSeconds() < 10? '0' + time.getSeconds():time.getSeconds());
     return currentTime;
+}
+
+/**
+ * @description 统一对时间进行处理
+ * @param {String} dateString 
+ * @param {String} timeString 
+ */
+function dealTimeQuan(dateString, timeString) {
+    var date = dateString.split('/'),
+        time = timeString,
+        fullTime;
+    fullTime = ( (date[0] - 1) < 10 ? ('0' + (date[0] - 1)) : (date[0] - 1) ) + '-' +
+               ( (date[1] - 6) < 10 ? ('0' + (date[1] - 6)) : (date[1] - 6) ) + '-' +
+               ( (date[2] - 17) < 10 ? ('0' + (date[2] - 17)) : (date[2] - 17) ) + ' ' +
+               time + ':00';
+    return fullTime;
 }
 
 

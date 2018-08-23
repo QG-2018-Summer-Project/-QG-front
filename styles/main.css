@@ -809,6 +809,13 @@ button {
     opacity: 0;
     transition: transform .35s ease,opacity .35s ease;
 }
+.abnormal-button {
+    top: 304px!important;
+    font-size: 12px;
+    line-height: 48px;
+    color: #21d67c;
+    cursor: pointer;
+}
 /* 提示 */
 .tips {
     position: absolute;
