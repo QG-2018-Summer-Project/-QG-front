@@ -164,11 +164,31 @@ button {
 }
 #close-button {
     width: auto;
-
+    display: inline-block;
     background: transparent;
     font-size: 20px;
     font-weight: 600;
     color: red;
     cursor: pointer;
     margin-right: 5px;
+}
+.recommand {
+    height: 28px;
+    width: 56px;
+    line-height: 28px;
+    background-color: #21d67f;
+    font-size: 15px;
+    border-radius: 3px;
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    margin-top: -14px;
+    text-align: center;
+}
+
+/* 选择某条路时，对应的route-li高亮 */
+
+.route-highlight {
+    background-color: #bfffdf !important;
 }

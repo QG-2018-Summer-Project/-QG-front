@@ -192,5 +192,68 @@
             <button id="end" class="set-button">到这里去</button>
         </div>
     </div>
+    <script>
+    function analysisRouteData(data) {
+        var steps = [],
+            routes = [];
+
+        // function deepCopyObj(object) {
+        //     if (typeof object != 'object') {
+        //         return object;
+        //     } 
+        //     var newObj = {};
+        //     for (const key in object) {
+        //         if (object.hasOwnProperty(key)) {
+        //             newObj[key] = deepCopyObj(object[key]);
+        //         }
+        //     }
+        //     return newObj;
+        // }
+
+        function copyObj(object) {
+            var newObj = {};
+            for (const key in object) {
+                if (object.hasOwnProperty(key)) {
+                    newObj[key] = object[key];
+                }
+            }
+            return newObj;
+        }
+
+        for (let k = 0, route = {}; k < data.length; k++) {
+            route.allTime = data[k].time;
+            route.distance = data[k].distance;
+            route.index = k;
+
+            for (let i = 0, step = {}; i < data[k].steps.length; i++) {
+                step.startLocation = {};
+                step.endLocation = {};
+
+                step.startLocation.lon = data[k].steps[i].start_location.lng;
+                step.startLocation.lat = data[k].steps[i].start_location.lat;
+
+                step.endLocation.lon = data[k].steps[i].end_location.lng;
+                step.endLocation.lat = data[k].steps[i].end_location.lat;
+
+                step.time = data[k].steps[i].time;
+                // step.distance = data[0].steps[i].distance;
+
+                step.path = new Array();
+
+                for (let j = 0, path = {}; j < data[k].steps[i].path.length; j++) {
+                    path.lon =  data[k].steps[i].path[j].lng;
+                    path.lat =  data[k].steps[i].path[j].lat;
+                    step.path.push(copyObj(path));
+                }
+                
+                steps.push(copyObj(step));
+            }
+            route.steps = steps;
+            routes.push(copyObj(route));
+        }
+        return routes;
+    }
+    
+    </script>
 </body>
 </html>

@@ -27,10 +27,6 @@
     <script src="../srcipts/jquery-3.3.1.min.js"></script>
     <!-- 引入echarts文件 -->
     <script src="../srcipts/echarts.min.js"></script>
-    <!-- 引入高德地图核心文件 -->
-    
-    <!-- 引入高德地图loca插件核心文件 -->
-    
 </head>
 <body>
     <div class="root">
@@ -59,11 +55,11 @@
                                 </div>
                             </li>
                         </ul>
-                        <div class="route-button-container">
+                        <!-- <div class="route-button-container">
                             <button id="locate-button">我的位置</button>
                             <button id="route-button">开始导航</button>
                             <button id="delete-route-button">清除路线</button>
-                        </div>
+                        </div> -->
                         <div class="search-container">
                             <img src="../images/icon/icon_search.png">
                             <input type="text" id="search-input">
@@ -73,7 +69,7 @@
                         <div class="nav-1">
                             <img src="../images/icon/icon_data.png">
                             <span>交通情况</span>
-                            <button class="show-nav-button"></button>
+                            <button class="show-second-menu-button"></button>
                             <div class="nav-2-container">
                                 <ul class="nav-2-ul">
                                     <li class="nav-2-li">
@@ -94,23 +90,24 @@
                         <div class="nav-1">
                             <img src="../images/icon/icon_best.png">
                             <span>最佳路线</span>
-                            <button class="show-nav-button"></button>
-                            <div class="nav-2-container">
-                                <ul class="nav-2-ul">
-                                    <li class="nav-2-li">
+                            <button class="show-second-menu-button"></button>
+                            <div class="route-container">
+                                <ul class="route-ul">
+                                    <li class="route-li" id="route-1" data-r="0">
                                         <img src="../images/route_1.png">
-                                        <span>12</span>min
-                                        <span>212</span>公里
+                                        <span class="route-time"></span>
+                                        <span class="route-distance"></span>
+                                        <!-- <div class="recommand">推荐</div> -->
                                     </li>
-                                    <li class="nav-2-li middle-li" id="" >
+                                    <li class="route-li" id="route-2" data-r="1">
                                         <img src="../images/route_2.png">
-                                        <span>12</span>min
-                                        <span>212</span>公里
+                                        <span class="route-time"></span>
+                                        <span class="route-distance"></span>
                                     </li>
-                                    <li class="nav-2-li">
+                                    <li class="route-li" id="route-3" data-r="2">
                                         <img src="../images/route_3.png">
-                                        <span>12</span>min
-                                        <span>212</span>公里
+                                        <span class="route-time"></span>
+                                        <span class="route-distance"></span>
                                     </li>
                                 </ul>
                             </div>   
@@ -118,7 +115,7 @@
                         <div class="nav-1">
                             <img src="../images/icon/icon_matrixcode.png">
                             <span>微信分享</span>
-                            <button class="show-nav-button"></button>
+                            <button class="show-second-menu-button"></button>
                         </div>
                     </div>
                 </div>
@@ -312,7 +309,7 @@
                 <li class="map-mode-switch-container"><div class="modeChoice flex-box mode-choiced" id="normal-map"><img src="../images/icon_map.png"></div><div class="modeChoice flex-box" id="heat-map"><img src="../images/icon_heat.png"></div><div class="switch-mode flex-box"><img src="../images/icon_change.png"></div></li>
                 <li class="time-mode-switch-container"><div class="modeChoice flex-box mode-choiced" id="past-tense"><img src="../images/icon_anticlockwise.png"></div><div class="modeChoice flex-box" id="future-tense"><img src="../images/icon_clockwise.png"></div><div class="switch-mode flex-box"><img src="../images/icon_time jumping.png"></div></li>
                 <li class="location-button flex-box"><img src="../images/icon_aim.png"></li>
-                <li class="abnormal-button">异常分析</li>
+                <li class="abnormal-button"><img src="../images/abnormal.png"></li>
             </ul>
             <div class="date-switch-container">
                 <button>确定</button>

@@ -52,7 +52,7 @@ var EventUtil = {
             };
         } else if (window.attachEvent) {
             return function () {
-                arguments[0].attachEvent("on" + arguments[1], arguments[2]);
+                arguments[0].attachEvent("on" + arguments[1], arguments[2]); 
             };
         } else {
             return function () {
