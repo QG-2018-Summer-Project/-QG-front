@@ -55,13 +55,12 @@ function activeHotSpot() {
             
             console.log(result);
             if (status === 'complete' && result.info === 'OK') {
-                
-                // map.count++;
-               
                 //开启信息窗口
                 var poiInfo = result.poiList.pois[0];           
                 showInfoWindow(poiInfo.name, poiInfo.location);               
-            } 
+            } else {
+                showError('请检查你的网络！');
+            }
         });
     });
 }
@@ -98,13 +97,16 @@ function clearInput() {
             map.remove(map.startMarker);
         }
         clearAllRoutes();
+        removeBestWay();
     });
+
     EventUtil.addHandler(clearInputButton[1], 'click', function () {
         setEndContent("");
         if (map.hasOwnProperty('endMarker')) {
             map.remove(map.endMarker);
         }
         clearAllRoutes();
+        removeBestWay();
     });
 }
 
@@ -215,7 +217,8 @@ function startRoute() {
         end = map.endMarker.getPosition();
     
     if ((start.lng === end.lng) && (start.lat === end.lat)) {
-        alert('起点和终点不能相同！请重新选择!');
+        // alert('起点和终点不能相同！请重新选择!');
+        showError('起点和终点不能相同！请重新选择!');
         map.remove(map.endMarker);
         return; 
     }
@@ -227,34 +230,43 @@ function startRoute() {
         policy: 11
     }); 
 
+    // 清除上次规划出的所有的路线
+    clearAllRoutes();
+
     driving.search(start, end, function(status, result) {
         if (status === 'no_data') {
             alert('没有结果');
+        } else if (status === 'error') {
+            showError('网络似乎不是很好哦~');
         } else {
-            // 清除上次规划出的所有的路线
-            clearAllRoutes();
+            
             var routes = result.routes;
-            window.routesData = result.routes;
+            // 保存查找出来的数据
+            map.routesData = result.routes;
+
             // 把路径对象添加到map对象里
-            map.routes = [];
+            map.routes = new Array();
            
             // 提取有用的路径信息
             var data = {
                 routes: analysisRoutesData(routes)
             };
-            console.log(data);
-            
+           
+            console.log(routes.length); 
+
             //如果有多条路线，把他们全画出来，并且进行请求
             switch(routes.length) {
                 case 1: {
                     //如果只有一条路线，直接画出来，不用请求
                     drawRoute(routes, 1);
                     showRoutesPanel();
+                    showBestWay(0);
                     break;
                 } default: {
                     drawRoute(routes, routes.length);
                     showRoutesPanel();
-                    sendRoutesData(data);
+                    debugger
+                    findTheBestWay(data);
                 }
             }    
         }
@@ -264,7 +276,7 @@ function startRoute() {
      * 发送路径规划请求
      * @param {object} data 
      */
-    function sendRoutesData(data) {
+    function findTheBestWay(data) {
         console.log(data);
         $.ajax({
             url: 'http://' + ip +':8080/qgtaxi/roadandcar/querybestway',
@@ -280,12 +292,42 @@ function startRoute() {
             console.log(result);
             if (result.status === '2000') {
                 showBestWay(result.index);
+                drawTraffic(result.steps, result.index);
             } else {
                 console.log('推荐失败');
             }
         }   
         function errorCallback() {
             console.log('请求失败');
+        }
+
+        function drawTraffic(flag, index) {
+            var color = ['red', 'yellowgreen', 'green'],
+                steps = map.routesData[index].steps,
+                _overlays = [],
+                path;
+                
+            for (let i = 0, j = 0; i < steps.length; i++) {
+               
+                path = new AMap.Polyline({
+                    map: map,
+                    path: steps[i].path,
+                    lineJoin: 'round',
+                    strokeOpacity: 1,  //线透明度
+                    strokeWeight: 6, //线宽
+                    zIndex: 52, //默认zindex为50,
+                    strokeColor: color[flag[i]], //线颜色
+                    borderWeight: 2,
+                    showDir: true,
+                    isOutline: true,
+                    outlineColor: '#fff',
+                });
+                _overlays.push(path);
+            }
+            
+            map.traffic = _overlays;
+
+            console.log(_overlays);
         }
     }
 }
@@ -296,9 +338,12 @@ function startRoute() {
  */
 function showBestWay(index) {
     var routeLi = document.getElementsByClassName('route-li'),
-        s = `<div class="recommand">推荐</div>`;
-    routeLi[index].appendChild(s);
-    routeLi[index].setAttribute('data-r', 'recommand');
+        div = document.createElement('div');
+        div.setAttribute('class', 'recommand');
+        div.innerHTML = '推荐';
+        
+    routeLi[index].appendChild(div);
+    routeLi[index].setAttribute('data-recommand', 'recommand');
 }
 
 /**
@@ -307,9 +352,79 @@ function showBestWay(index) {
 function removeBestWay() {  
     var routeLi = document.getElementsByClassName('route-li');
     for (let i = 0; i < routeLi.length; i++) {
-        if (routeLi[i].getAttribute('data-r') === 'recommand') {
-            routeLi.removeChild(routeLi[i].lastElementChild);
+        if (routeLi[i].getAttribute('data-recommand') === 'recommand') {
+            routeLi[i].removeChild(routeLi[i].lastElementChild);
         }
+    }
+}
+/**
+ * 在地图上展示异常情况
+ */
+function showRouteError(time) {
+    $.ajax({
+        url: 'http://' + ip +':8080/qgtaxi/charts/exception',
+        type: 'POST',
+        data: JSON.stringify({currentTime: time}),
+        dataType: 'JSON',
+        processData: false,
+        contentType: 'application/json',
+        success: successCallback,
+        error: errorCallback
+    });
+    function successCallback(r) {
+
+        var errorMarkers = new Array(),
+            location = new Object();
+            
+
+        if (r.status === '2000') {
+            for (let i = 0, marker, type; i < r.pointSet.length; i++) {
+
+                location.lng =  r.pointSet[i].lon;
+                location.lat =  r.pointSet[i].lat;
+
+                reason = r.pointSet[i].reason;
+
+                switch(r.pointSet[i].type) {
+                    case '数量骤减' : {
+                        type = {x: -9, y: -138};
+                        break;
+                    } case '数量骤增': {
+                        type = {x: -9, y: -48};
+                        break;
+                    } 
+                }
+
+                marker = new AMap.Marker({
+                    map: map,
+                    position: location,
+                    animation: 'AMAP_ANIMATION_DROP',
+                    icon: new AMap.Icon({            
+                        size: new AMap.Size(25, 34),  //图标大小
+                        image: "../images/poi-marker.png",
+                        imageSize: [437, 267],
+                        imageOffset: type,
+                        extData: reason
+                    })
+                });
+                
+                errorMarkers.push(marker);
+
+                AMap.event.addListener(marker, 'click', function() {
+                    var content = e.currentTarget.getExtData(),
+                        infowindow = new AMap.infowindow({
+                            content: content,
+                            offset: new AMap.Pixel(-2, -22) //left: -2, top: -20
+                        });
+                        infowindow.open(map, e.currentTarget.getPosition());
+                });
+            }
+            // 添加到地图上
+            map.add(errorMarkers);
+        }
+    }
+    function errorCallback() {
+
     }
 }
 
@@ -322,7 +437,7 @@ function drawRoute(routes, length) {
     //不同的路线颜色不相同
     var colors = [
         'blue',
-        'red',
+        'grey',
         'yellow'
     ];
     
@@ -342,8 +457,6 @@ function drawRoute(routes, length) {
         }
         addOverlays(paths, colors[i], distance, time);
     }
-    
-    
 }
 
 /**
@@ -354,7 +467,7 @@ function drawRoute(routes, length) {
 function addOverlays(paths, color, distance, time) {
     var _overlays = [];
     var path;
-
+    
     for (let i = 0; i < paths.length; i++) {
         path = new AMap.Polyline({
             map: map,
@@ -368,10 +481,11 @@ function addOverlays(paths, color, distance, time) {
             zIndex: 50, //默认zindex为50
             isOutline: true,
             outlineColor: '#fff',
+            borderWeight: 3
         });
         _overlays.push(path);
     } 
-   
+    
     var startPath = [map.startMarker.getPosition(), paths[0][0]],
         endPath = [paths[0][paths[0].length - 1], map.endMarker.getPosition()];
 
@@ -388,6 +502,8 @@ function addOverlays(paths, color, distance, time) {
         strokeDasharray: [5, 5]
     });
     _overlays.push(path);
+
+    // console.log(_overlays);
 
     // 添加路线终点样式
     path = new AMap.Polyline({
@@ -477,7 +593,6 @@ function selectRoute(target) {
         });
         ClassUtil.removeClass(routeLi[i], 'route-highlight');
     }
-  
 
     ClassUtil.addClass(routeLi[map.routes.indexOf(target)], 'route-highlight');
 
@@ -516,6 +631,7 @@ function showRoutesPanel() {
     EventUtil.addHandler(switchModeButton, 'click', switchCallBack);    
 
     closeRoutesPanel();
+
     function switchCallBack() {
         ClassUtil.toggleClass(routeContainer, modeclass);
         ClassUtil.toggleClass(switchModeButton, 'show-second-menu-button-animation');
@@ -568,7 +684,6 @@ function showRoutesPanel() {
             switchModeButton = document.getElementsByClassName('show-second-menu-button')[1];
             
         // 清除事件
-        // EventUtil.removeHandler(routeContainer, 'click', );
         EventUtil.removeHandler(switchModeButton, 'click', switchCallBack);
 
         // 清除路线绑定的事件
@@ -583,7 +698,6 @@ function showRoutesPanel() {
         //清除推荐路线样式
         removeBestWay();
     }
-    // clickRouteSecondMenu();
 }
 
 /**
@@ -597,8 +711,16 @@ function clearAllRoutes() {
             map.remove(map.routes[i]);
             ClassUtil.removeClass(routeLi[i], 'route-highlight');
         }
+        
         map.remove(map.startRoute);
         map.remove(map.endRoute);
+
+        if (map.hasOwnProperty('traffic')) {
+            for (let i = 0; i < map.traffic.length; i++) {
+                map.remove(map.traffic[i]);
+            }
+        }
+
     } else {
         return;
     }
@@ -1712,56 +1834,55 @@ function heatmapDisplay(jsonObj) {
 
 
 
-function analysisRouteData(data, index) {
-    console.log(data);
+// function analysisRouteData(data, index) {
+//     console.log(data);
 
-    var route = [ //路径
-        {
-            index: index.toString(), //第几条路线
-            steps: [ //要经历的步骤
-                {
-                    path: [ //此路段坐标集合
-                        {
+//     var route = [ //路径
+//         {
+//             index: index.toString(), //第几条路线
+//             steps: [ //要经历的步骤
+//                 {
+//                     path: [ //此路段坐标集合
+//                         {
 
-                        }
-                    ],
-                    start_location: {},
-                    end_location: {},
-                    time: "", //经过这个路段要多久
-                }
-            ],
-            allTime: "", //高德地图预测的时间
-            distance: "" //起点和终点之间的距离
-        }
-    ];
-    route[0].allTime = data.time.toString();
-    route[0].distance = data.distance.toString();
+//                         }
+//                     ],
+//                     start_location: {},
+//                     end_location: {},
+//                     time: "", //经过这个路段要多久
+//                 }
+//             ],
+//             allTime: "", //高德地图预测的时间
+//             distance: "" //起点和终点之间的距离
+//         }
+//     ];
+//     route[0].allTime = data.time.toString();
+//     route[0].distance = data.distance.toString();
 
-    for (let i = 0; i < data.steps.length; i++) {
-        route[0].steps[i].path = [];
+//     for (let i = 0; i < data.steps.length; i++) {
+//         route[0].steps[i].path = [];
 
-        route[0].steps[i].start_location = {
-            lon: data.steps[i].start_location.lng,
-            lat: data.steps[i].start_location.lat
-        };
-        route[0].steps[i].end_location = {
-            lon: data.steps[i].end_location.lng,
-            lat: data.steps[i].end_location.lat,
-        };
-        route[0].steps[i].time = data.steps[i].time.toString();
+//         route[0].steps[i].start_location = {
+//             lon: data.steps[i].start_location.lng,
+//             lat: data.steps[i].start_location.lat
+//         };
+//         route[0].steps[i].end_location = {
+//             lon: data.steps[i].end_location.lng,
+//             lat: data.steps[i].end_location.lat,
+//         };
+//         route[0].steps[i].time = data.steps[i].time.toString();
 
-        route[0].steps.push({
+//         route[0].steps.push({
 
-        });
-        for (let j = 0; j < data.steps[i].path.length; j++) {
-            route[0].steps[i].path[j] = {
-                lon: data.steps[i].path[j].lng,
-                lat: data.steps[i].path[j].lat
-            };
-        }
-    }
-    //去除最后一个数组项
-    route[0].steps.pop();
-    console.log(route[0]);
-}
-
+//         });
+//         for (let j = 0; j < data.steps[i].path.length; j++) {
+//             route[0].steps[i].path[j] = {
+//                 lon: data.steps[i].path[j].lng,
+//                 lat: data.steps[i].path[j].lat
+//             };
+//         }
+//     }
+//     //去除最后一个数组项
+//     route[0].steps.pop();
+//     console.log(route[0]);
+// }
