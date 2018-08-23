@@ -385,7 +385,7 @@ function showRouteError(time) {
             x,
             y;
             
-
+            
         if (r.status === '2000') {
             for (let i = 0, marker; i < r.pointSet.length; i++) {
 
@@ -429,22 +429,21 @@ function showRouteError(time) {
             // 添加到地图上
             map.add(errorMarkers);
             map.errorMarkers = errorMarkers;
+            map.setZoomAndCenter(12, new AMap.LngLat(r.pointSet[0].lon, r.pointSet[0].lat));
         }
     }
     function errorCallback() {
-
+        showError('网络似乎不太好~');
     }
 }
 /**
  * 隐藏道路异常
  */
 function hideRouteError() {
-    if (map.hasOwnProperty('errorMarkers')) {
-        for (let i = 0; i < map.errorMarkers.length; i++) {
-            map.remove(map.errorMarkers[i]);
-            map.errorMarkers = null;
-        }
+    for (let i = 0; i < map.errorMarkers.length; i++) {
+        map.remove(map.errorMarkers[i]);
     }
+    map.errorMarkers = [];
 }
 
 /**
@@ -453,7 +452,8 @@ function hideRouteError() {
 function abnormalAnalysis() {
     var currentTime; 
     
-    if (map.errorMarkers) {
+    if (map.hasOwnProperty('errorMarkers') && map.errorMarkers.length > 0) {
+        
         $('.abnormal-button img').attr('src', '../images/abnormal.png');
         hideRouteError();
     } else {
@@ -2736,55 +2736,3 @@ function heatmapDisplay(jsonObj) {
 
 
 
-// function analysisRouteData(data, index) {
-//     console.log(data);
-
-//     var route = [ //路径
-//         {
-//             index: index.toString(), //第几条路线
-//             steps: [ //要经历的步骤
-//                 {
-//                     path: [ //此路段坐标集合
-//                         {
-
-//                         }
-//                     ],
-//                     start_location: {},
-//                     end_location: {},
-//                     time: "", //经过这个路段要多久
-//                 }
-//             ],
-//             allTime: "", //高德地图预测的时间
-//             distance: "" //起点和终点之间的距离
-//         }
-//     ];
-//     route[0].allTime = data.time.toString();
-//     route[0].distance = data.distance.toString();
-
-//     for (let i = 0; i < data.steps.length; i++) {
-//         route[0].steps[i].path = [];
-
-//         route[0].steps[i].start_location = {
-//             lon: data.steps[i].start_location.lng,
-//             lat: data.steps[i].start_location.lat
-//         };
-//         route[0].steps[i].end_location = {
-//             lon: data.steps[i].end_location.lng,
-//             lat: data.steps[i].end_location.lat,
-//         };
-//         route[0].steps[i].time = data.steps[i].time.toString();
-
-//         route[0].steps.push({
-
-//         });
-//         for (let j = 0; j < data.steps[i].path.length; j++) {
-//             route[0].steps[i].path[j] = {
-//                 lon: data.steps[i].path[j].lng,
-//                 lat: data.steps[i].path[j].lat
-//             };
-//         }
-//     }
-//     //去除最后一个数组项
-//     route[0].steps.pop();
-//     console.log(route[0]);
-// }
