@@ -357,9 +357,11 @@ function removeBestWay() {
         }
     }
 }
+
 /**
  * 在地图上展示异常情况
  */
+//时间格式：xxxx-xx-xx xx:xx
 function showRouteError(time) {
     $.ajax({
         url: 'http://' + ip +':8080/qgtaxi/charts/exception',
@@ -374,57 +376,69 @@ function showRouteError(time) {
     function successCallback(r) {
 
         var errorMarkers = new Array(),
-            location = new Object();
+            time,
+            reason,
+            x,
+            y;
             
 
         if (r.status === '2000') {
-            for (let i = 0, marker, type; i < r.pointSet.length; i++) {
-
-                location.lng =  r.pointSet[i].lon;
-                location.lat =  r.pointSet[i].lat;
+            for (let i = 0, marker; i < r.pointSet.length; i++) {
 
                 reason = r.pointSet[i].reason;
+                time = r.pointSet[i].time;
 
-                switch(r.pointSet[i].type) {
-                    case '数量骤减' : {
-                        type = {x: -9, y: -138};
-                        break;
-                    } case '数量骤增': {
-                        type = {x: -9, y: -48};
-                        break;
-                    } 
+                
+                if (r.pointSet[i].type === '1') {
+                    y = -138;
+                    x = -9;
+                } else {
+                    y = -48;
+                    x = -52;
                 }
 
                 marker = new AMap.Marker({
                     map: map,
-                    position: location,
+                    position: new AMap.LngLat(r.pointSet[i].lon, r.pointSet[i].lat),
                     animation: 'AMAP_ANIMATION_DROP',
                     icon: new AMap.Icon({            
                         size: new AMap.Size(25, 34),  //图标大小
                         image: "../images/poi-marker.png",
                         imageSize: [437, 267],
-                        imageOffset: type,
-                        extData: reason
-                    })
+                        imageOffset: new AMap.Pixel(x, y)
+                    }), 
+                    extData: time.concat(' ').concat(reason),
                 });
                 
                 errorMarkers.push(marker);
 
-                AMap.event.addListener(marker, 'click', function() {
-                    var content = e.currentTarget.getExtData(),
-                        infowindow = new AMap.infowindow({
+                AMap.event.addListener(marker, 'click', function(e) {
+                    var content = e.target.getExtData(),
+                        infowindow = new AMap.InfoWindow({
                             content: content,
                             offset: new AMap.Pixel(-2, -22) //left: -2, top: -20
                         });
-                        infowindow.open(map, e.currentTarget.getPosition());
+                        infowindow.open(map, e.target.getPosition());
+                    
                 });
             }
             // 添加到地图上
             map.add(errorMarkers);
+            map.errorMarkers = errorMarkers;
         }
     }
     function errorCallback() {
 
+    }
+}
+/**
+ * 隐藏道路异常
+ */
+function hideRouteError() {
+    if (map.hasOwnProperty('errorMarkers')) {
+        for (let i = 0; i < map.errorMarkers.length; i++) {
+            map.remove(map.errorMarkers[i]);
+        }
     }
 }
 
