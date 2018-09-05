@@ -256,8 +256,6 @@ function startRoute() {
                 routes: analysisRoutesData(routes)
             };
            
-            console.log(routes.length); 
-
             //如果有多条路线，把他们全画出来，并且进行请求
             switch(routes.length) {
                 case 1: {
@@ -267,23 +265,26 @@ function startRoute() {
                     showBestWay(0);
                     break;
                 } default: {
+                    
                     drawRoute(routes, routes.length);
                     showRoutesPanel();
-                    debugger
                     findTheBestWay(data);
                 }
             }    
         }
     });
-
+    
     /**
      * 发送路径规划请求
      * @param {object} data 
      */
     function findTheBestWay(data) {
-        console.log(data);
+        var routeLoadingContainer = document.getElementsByClassName('route-roading-container')[0];
+
+            ClassUtil.addClass(routeLoadingContainer, 'show');
+
         $.ajax({
-            url: 'http://' + ip +':8080/qgtaxi/roadandcar/querybestway',
+            url: 'http://' + ip +':1205/qgtaxi/roadandcar/querybestway',
     	    type: 'POST',
             data: JSON.stringify(data),
             dataType: 'JSON',
@@ -293,18 +294,21 @@ function startRoute() {
             error: errorCallback
         });
         function successCallback(result) {
-            console.log(result);
+            ClassUtil.removeClass(routeLoadingContainer, 'show');
+
             if (result.status === '2000') {
-                showBestWay(result.index);
                 drawTraffic(result.steps, result.index);
             } else {
                 console.log('推荐失败');
             }
         }   
         function errorCallback() {
-            console.log('请求失败');
+            ClassUtil.removeClass(routeLoadingContainer, 'show');
+
+            showError('网络状态似乎不太好~');
         }
 
+        // 显示道路实时交通状态
         function drawTraffic(flag, index) {
             var color = ['red', 'yellowgreen', 'green'],
                 steps = map.routesData[index].steps,
@@ -368,7 +372,7 @@ function removeBestWay() {
 //时间格式：xxxx-xx-xx xx:xx
 function showRouteError(time) {
     $.ajax({
-        url: 'http://' + ip +':8080/qgtaxi/charts/exception',
+        url: 'http://' + ip +':1205/qgtaxi/charts/exception',
         type: 'POST',
         data: JSON.stringify({currentTime: time}),
         dataType: 'JSON',
@@ -394,11 +398,11 @@ function showRouteError(time) {
 
                 
                 if (r.pointSet[i].type === '1') {
-                    y = -138;
-                    x = -9;
+                    y = -3;
+                    x = -141;
                 } else {
-                    y = -48;
-                    x = -52;
+                    y = -3;
+                    x = -360;
                 }
 
                 marker = new AMap.Marker({
@@ -543,7 +547,7 @@ function addOverlays(paths, color, distance, time) {
     });
     _overlays.push(path);
 
-    // console.log(_overlays);
+   
 
     // 添加路线终点样式
     path = new AMap.Polyline({
@@ -2278,7 +2282,7 @@ function realTimeHeatmapRequest() {
     jsonObj.currentTime = getCurrentTime();
 
     $.ajax({
-        url: 'http://'+ window.ip +':8080/qgtaxi/maps/liveheatmap',
+        url: 'http://'+ window.ip +':1205/qgtaxi/maps/liveheatmap',
         type: 'post',
         data: JSON.stringify(jsonObj),
         dataType: 'json',
@@ -2357,7 +2361,7 @@ function timeQuantumHeatmapRequest() {
     showRequestLoading();   // 执行动画，避免多次请求
     console.log('时间段请求已经发送')
     $.ajax({
-        url: 'http://'+ window.ip +':8080/qgtaxi/maps/querymap',
+        url: 'http://'+ window.ip +':1205/qgtaxi/maps/querymap',
         type: 'post',
         data: JSON.stringify(jsonObj),
         dataType: 'json',
@@ -2428,7 +2432,7 @@ function predictCountRequest() {
     console.log(jsonObj);
 
     $.ajax({
-        url: 'http://'+ window.ip +':8080/qgtaxi/maps/count',
+        url: 'http://'+ window.ip +':1205/qgtaxi/maps/count',
         type: 'post',
         data: JSON.stringify(jsonObj),
         dataType: 'json',
@@ -2497,7 +2501,7 @@ function predictDemandedRequest() {
 
 
     $.ajax({
-        url: 'http://'+ window.ip +':8080/qgtaxi/maps/demanded',
+        url: 'http://'+ window.ip +':1205/qgtaxi/maps/demanded',
         type: 'post',
         data: JSON.stringify(jsonObj),
         dataType: 'json',
@@ -2554,7 +2558,7 @@ function flowChangeRequest() {
     jsonObj.currentTime = getCurrentTime();
     console.log(jsonObj.currentTime)
     $.ajax({
-        url: 'http://'+ window.ip +':8080/qgtaxi/charts/changepercent',
+        url: 'http://'+ window.ip +':1205/qgtaxi/charts/changepercent',
         type: 'post',
         data: JSON.stringify(jsonObj),
         dataType: 'json',
@@ -2609,7 +2613,7 @@ function utilizationRateRequest() {
     jsonObj.currentTime = getCurrentTime();
 
     $.ajax({
-        url: 'http://'+ window.ip +':8080/qgtaxi/charts/utilizepercent',
+        url: 'http://'+ window.ip +':1205/qgtaxi/charts/utilizepercent',
         type: 'post',
         data: JSON.stringify(jsonObj),
         dataType: 'json',
@@ -2664,7 +2668,7 @@ function crowdRequest() {
     jsonObj.currentTime = getCurrentTime();
 
     $.ajax({
-        url: 'http://'+ window.ip +':8080/qgtaxi/charts/crowded',
+        url: 'http://'+ window.ip +':1205/qgtaxi/charts/crowded',
         type: 'post',
         data: JSON.stringify(jsonObj),
         dataType: 'json',
