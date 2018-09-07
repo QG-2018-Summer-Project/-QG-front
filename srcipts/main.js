@@ -52,12 +52,10 @@ function activeHotSpot() {
     });
     // map.count = 0;
     var clickEventListener = map.on('hotspotclick', function(e) {
-        console.log('定位成功:' + '[' + e.lnglat.getLng() + ',' + e.lnglat.getLat() + ']');
         map.setZoomAndCenter(15, [e.lnglat.getLng(), e.lnglat.getLat()]);
     
         placeSearch.getDetails(e.id, function(status, result) {
             
-            console.log(result);
             if (status === 'complete' && result.info === 'OK') {
                 //开启信息窗口
                 var poiInfo = result.poiList.pois[0];           
@@ -101,7 +99,8 @@ function clearInput() {
             map.remove(map.startMarker);
         }
         clearAllRoutes();
-        removeBestWay();
+        closeRoutesPanel();
+
     });
 
     EventUtil.addHandler(clearInputButton[1], 'click', function () {
@@ -110,7 +109,8 @@ function clearInput() {
             map.remove(map.endMarker);
         }
         clearAllRoutes();
-        removeBestWay();
+        closeRoutesPanel();
+
     });
 }
 
@@ -158,7 +158,6 @@ function addInfoEvent(location, content) {
                 EventUtil.removeHandler(this, 'click', infoWindowListener);
                 break;
             } case $('.amap-overlays button')[1]: {
-                console.log(event.target);
                 selectMarker(0, location);
                 setStartContent(content);
                 EventUtil.removeHandler(this, 'click', infoWindowListener);             
@@ -239,7 +238,7 @@ function startRoute() {
 
     driving.search(start, end, function(status, result) {
         if (status === 'no_data') {
-            alert('没有结果');
+            showError('没有推荐的路径');
         } else if (status === 'error') {
             showError('网络似乎不是很好哦~');
         } else {
@@ -265,9 +264,8 @@ function startRoute() {
                     showBestWay(0);
                     break;
                 } default: {
-                    
+                    closeRoutesPanel();
                     drawRoute(routes, routes.length);
-                    showRoutesPanel();
                     findTheBestWay(data);
                 }
             }    
@@ -284,7 +282,7 @@ function startRoute() {
             ClassUtil.addClass(routeLoadingContainer, 'show');
 
         $.ajax({
-            url: 'http://' + ip +':1205/qgtaxi/roadandcar/querybestway',
+            url: 'http://' + ip +':8080/qgtaxi/roadandcar/querybestway',
     	    type: 'POST',
             data: JSON.stringify(data),
             dataType: 'JSON',
@@ -297,7 +295,18 @@ function startRoute() {
             ClassUtil.removeClass(routeLoadingContainer, 'show');
 
             if (result.status === '2000') {
+                // 显示实时的交通状况
                 drawTraffic(result.steps, result.index);
+
+                // 修改高德地图的时间
+                for (let i = 0; i < map.routes.length; i++) {
+                    map.routes[i].time = result.minute[i] * 60;
+                    console.log(result.minute[i]);
+                }
+
+                showRoutesPanel();
+                showBestWay(result.index);
+
             } else {
                 console.log('推荐失败');
             }
@@ -362,6 +371,7 @@ function removeBestWay() {
     for (let i = 0; i < routeLi.length; i++) {
         if (routeLi[i].getAttribute('data-recommand') === 'recommand') {
             routeLi[i].removeChild(routeLi[i].lastElementChild);
+            routeLi[i].setAttribute('data-recommand', '');
         }
     }
 }
@@ -369,10 +379,10 @@ function removeBestWay() {
 /**
  * 在地图上展示异常情况
  */
-//时间格式：xxxx-xx-xx xx:xx
+// 时间格式：xxxx-xx-xx xx:xx
 function showRouteError(time) {
     $.ajax({
-        url: 'http://' + ip +':1205/qgtaxi/charts/exception',
+        url: 'http://' + ip +':8080/qgtaxi/charts/exception',
         type: 'POST',
         data: JSON.stringify({currentTime: time}),
         dataType: 'JSON',
@@ -463,6 +473,7 @@ function abnormalAnalysis() {
     } else {
         $('.abnormal-button img').attr('src', '../images/icon_cross_small_normal.png');
         currentTime = getCurrentTime();
+        console.log(currentTime);
         showRouteError(currentTime);
     }
 }
@@ -664,23 +675,21 @@ function clickRouteSecondMenuCallback(event) {
 /**
  * 显示道路规划的二级菜单
  */
+var routeContainer = document.getElementsByClassName('route-container')[0],
+    switchModeButton = document.getElementsByClassName('show-second-menu-button')[1],
+    modeclass;
 function showRoutesPanel() {
-    var routeContainer = document.getElementsByClassName('route-container')[0],
-        switchModeButton = document.getElementsByClassName('show-second-menu-button')[1],
-        modeclass;
+    // var routeContainer = document.getElementsByClassName('route-container')[0],
+    //     switchModeButton = document.getElementsByClassName('show-second-menu-button')[1],
+    //     modeclass;
     
     var routeTime = document.getElementsByClassName('route-time'),
         routeDistance = document.getElementsByClassName('route-distance');
 
     EventUtil.addHandler(switchModeButton, 'click', switchCallBack);    
 
-    closeRoutesPanel();
-
-    function switchCallBack() {
-        ClassUtil.toggleClass(routeContainer, modeclass);
-        ClassUtil.toggleClass(switchModeButton, 'show-second-menu-button-animation');
-    }
-    
+    // closeRoutesPanel();
+  
     if (map.hasOwnProperty('routes')) {
 
         switch (map.routes.length) {
@@ -717,33 +726,38 @@ function showRoutesPanel() {
         return [time, distance];
     }
 
-    function selectRouteCallback(event) {
-        selectRoute(event.target);
-    }
-    /**
-     * 关闭路线推荐二级菜单
-     */
-    function closeRoutesPanel() {
-        var routeContainer = document.getElementsByClassName('route-container')[0],
-            switchModeButton = document.getElementsByClassName('show-second-menu-button')[1];
-            
-        // 清除事件
-        EventUtil.removeHandler(switchModeButton, 'click', switchCallBack);
-
-        // 清除路线绑定的事件
-        for (let i = 0; i < map.routes.length; i++) {
-            AMap.event.removeListener(map.routes[i], 'click', selectRouteCallback);
-        }
-        
-        // 重置class
-        switchModeButton.setAttribute('class', 'show-second-menu-button');
-        routeContainer.setAttribute('class', 'route-container');
-        
-        //清除推荐路线样式
-        removeBestWay();
-    }
+    
 }
 
+function selectRouteCallback(event) {
+    selectRoute(event.target);
+}  
+
+function switchCallBack() {
+    ClassUtil.toggleClass(routeContainer, modeclass);
+    ClassUtil.toggleClass(switchModeButton, 'show-second-menu-button-animation');
+}
+
+/**
+ * 关闭路线推荐二级菜单
+ */
+function closeRoutesPanel() {
+    
+    // 清除事件
+    EventUtil.removeHandler(switchModeButton, 'click', switchCallBack);
+
+    // 清除路线绑定的事件
+    for (let i = 0; i < map.routes.length; i++) {
+        AMap.event.removeListener(map.routes[i], 'click', selectRouteCallback);
+    }
+    
+    // 重置class
+    switchModeButton.setAttribute('class', 'show-second-menu-button');
+    routeContainer.setAttribute('class', 'route-container');
+    
+    //清除推荐路线样式
+    removeBestWay();
+}
 /**
  * 清除所有路线
  */

@@ -1,4 +1,4 @@
-window.ip = '10.21.48.11';
+window.ip = '192.168.31.248';
 window.currentDate = '2017-02-01 ';
 
 /**
@@ -8,8 +8,8 @@ window.currentDate = '2017-02-01 ';
 function getCurrentTime() {
     var time = new Date(),
         currentTime =  '2017-'
-                    + '0' + (((time.getMonth() + 7) < 10 ? '0' + (time.getMonth() + 7) : (time.getMonth() + 7)) % 12) + '-'
-                    + ((time.getDate() - 16) < 10 ? '0' + (time.getDate() - 16) : (time.getDate() - 16)) + ' '
+                    + '0' + (((time.getMonth() - 6) < 10 ? '0' + (time.getMonth() - 6) : (time.getMonth() - 6)) % 12) + '-'
+                    + ((time.getDate() + 2) < 10 ? '0' + (time.getDate() + 2) : (time.getDate() + 2)) + ' '
                     + (time.getHours() < 0? '0' + time.getHours():time.getHours())
                     + ':' + (time.getMinutes() < 10? '0' + time.getMinutes(): time.getMinutes())
                     + ':' + (time.getSeconds() < 10? '0' + time.getSeconds():time.getSeconds());
