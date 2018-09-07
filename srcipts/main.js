@@ -260,6 +260,7 @@ function startRoute() {
                 case 1: {
                     //如果只有一条路线，直接画出来，不用请求
                     drawRoute(routes, 1);
+                    closeRoutesPanel();
                     showRoutesPanel();
                     showBestWay(0);
                     break;
@@ -301,7 +302,7 @@ function startRoute() {
                 // 修改高德地图的时间
                 for (let i = 0; i < map.routes.length; i++) {
                     map.routes[i].time = result.minute[i] * 60;
-                    console.log(result.minute[i]);
+                    
                 }
 
                 showRoutesPanel();
@@ -669,7 +670,9 @@ function selectRoute(target) {
 })();
 
 function clickRouteSecondMenuCallback(event) {
-    selectRoute(map.routes[parseInt(event.target.getAttribute('data-r'))]);
+    
+    selectRoute(map.routes[parseInt(event.currentTarget.getAttribute('data-r'))]);
+    
 }
 
 /**
